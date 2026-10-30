@@ -1,0 +1,368 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:sound_center/core/services/audio_handler.dart';
+import 'package:sound_center/core/services/just_audio_service.dart';
+import 'package:sound_center/core/util/audio/audio_util.dart';
+import 'package:sound_center/database/shared_preferences/player_state_storage.dart';
+import 'package:sound_center/features/local_audio/domain/entities/audio.dart';
+import 'package:sound_center/features/local_audio/presentation/bloc/local_bloc.dart';
+import 'package:sound_center/main.dart';
+import 'package:sound_center/shared/Repository/base_player_repository.dart';
+import 'package:sound_center/shared/Repository/player_repository.dart';
+
+class LocalPlayerRepositoryImp extends BasePlayerRepository {
+  static final LocalPlayerRepositoryImp _instance =
+      LocalPlayerRepositoryImp._internal();
+
+  factory LocalPlayerRepositoryImp() {
+    return _instance;
+  }
+
+  LocalPlayerRepositoryImp._internal() {
+    super.playerService.setOnComplete(() => next());
+    _initialPlayerState();
+  }
+
+  final _audioChangedController = StreamController<AudioEntity?>.broadcast();
+
+  Stream<AudioEntity?> get audioChangedStream => _audioChangedController.stream;
+
+  void init() async {
+    try {
+      unawaited(_loadBanner());
+      if (PlayerStateStorage.getSource() != AudioSource.local) return;
+      _currentAudio = PlayerStateStorage.getLastAudio();
+      if (_currentAudio == null) return;
+      if (shuffleMode == ShuffleMode.shuffle) _shuffleAudios();
+      bool res = await super.playerService.setSource(
+        _currentAudio!.path,
+        AudioSource.local,
+      );
+      _audioChangedController.add(_currentAudio);
+      if (!res) return;
+      int position = PlayerStateStorage.getLastPosition();
+      await super.playerService.seek(Duration(milliseconds: position));
+      if (Platform.isLinux) {
+        final file = File(_currentAudio!.path);
+        _currentAudio!.cover = AudioUtil.getLinuxCover(file);
+      } else {
+        _currentAudio!.cover = await AudioUtil.getCover(
+          _currentAudio!.id,
+          coverSize: CoverSize.banner,
+        );
+      }
+      index = audios.indexWhere((a) => a.id == _currentAudio!.id);
+      if (index == -1) {
+        _currentAudio = null;
+        return;
+      }
+      shuffleIndex = shuffleList.indexWhere((a) => a == index);
+      audios[index] = _currentAudio!;
+      (audioHandler as JustAudioNotificationHandler).setMediaItemFrom(
+        _currentAudio!,
+        cover: Platform.isLinux ? _currentAudio!.cover : null,
+      );
+      bloc.add(AutoPlayNext());
+    } catch (e, st) {
+      debugPrint('init() failed: $e\n$st');
+      _currentAudio = null;
+    }
+  }
+
+  List<AudioEntity> audios = [];
+
+  AudioEntity? _currentAudio;
+
+  AudioEntity? get getCurrentAudio => _currentAudio;
+  List<int> _shuffle = [];
+
+  List<int> get shuffleList => _shuffle;
+
+  List<AudioEntity> get shuffledAudios =>
+      _shuffle.map((index) => audios[index]).toList();
+  int index = 0;
+  int shuffleIndex = 0;
+  AudioRepeatMode repeatMode = AudioRepeatMode.repeatAll;
+  ShuffleMode shuffleMode = ShuffleMode.noShuffle;
+
+  late final LocalBloc bloc;
+
+  void _initialPlayerState() {
+    repeatMode = PlayerStateStorage.getRepeatMode();
+    shuffleMode = PlayerStateStorage.getShuffleMode();
+  }
+
+  @override
+  bool hasSource() {
+    return super.playerService.hasSource(AudioSource.local);
+  }
+
+  bool isShuffle() {
+    return shuffleMode == ShuffleMode.shuffle;
+  }
+
+  void setBloc(LocalBloc bloc) {
+    this.bloc = bloc;
+  }
+
+  @override
+  void setPlayList(dynamic tracks) {
+    assert(tracks is List<AudioEntity>);
+    audios.clear();
+    for (AudioEntity track in tracks) {
+      audios.add(track);
+    }
+    unawaited(_loadBanner());
+  }
+
+  List<AudioEntity> getPlayList() {
+    if (shuffleMode == ShuffleMode.noShuffle) return audios;
+    return _shuffle.map((i) => audios[i]).toList();
+  }
+
+  @override
+  Future<void> changeRepeatState() async {
+    switch (repeatMode) {
+      case AudioRepeatMode.noRepeat:
+        repeatMode = AudioRepeatMode.repeatAll;
+        break;
+      case AudioRepeatMode.repeatAll:
+        repeatMode = AudioRepeatMode.repeatOne;
+        break;
+      case AudioRepeatMode.repeatOne:
+        repeatMode = AudioRepeatMode.noRepeat;
+        break;
+    }
+    await PlayerStateStorage.saveRepeatMode(repeatMode);
+  }
+
+  @override
+  Future<void> changeShuffleState() async {
+    if (shuffleMode == ShuffleMode.shuffle) {
+      shuffleMode = ShuffleMode.noShuffle;
+      _shuffle = [];
+    } else {
+      _shuffleAudios();
+    }
+    await PlayerStateStorage.saveShuffleMode(shuffleMode);
+    bloc.add(AutoPlayNext());
+  }
+
+  void _shuffleAudios() {
+    shuffleMode = ShuffleMode.shuffle;
+    shuffleIndex = 0;
+    _shuffle = List.generate(audios.length, (i) => i)
+      ..remove(index)
+      ..shuffle();
+
+    _shuffle.insert(0, index);
+  }
+
+  void reorderQueue(int oldIndex, int newIndex) {
+    if (shuffleMode == ShuffleMode.shuffle) {
+      final movedIndex = _shuffle.removeAt(oldIndex);
+      _shuffle.insert(newIndex, movedIndex);
+
+      shuffleIndex = _shuffle.indexOf(index);
+    } else {
+      final movedAudio = audios.removeAt(oldIndex);
+      audios.insert(newIndex, movedAudio);
+
+      index = audios.indexWhere((audio) => audio.id == _currentAudio?.id);
+    }
+  }
+
+  @override
+  Future<void> play(int index, {bool direct = false}) async {
+    bool res = await super.playerService.setSource(
+      audios[index].path,
+      AudioSource.local,
+    );
+    if (!res) return;
+    this.index = index;
+    _currentAudio = audios[index];
+    _audioChangedController.add(_currentAudio);
+    if (shuffleMode == ShuffleMode.shuffle) {
+      shuffleIndex = _shuffle.indexOf(index);
+      if (direct) _shuffleAudios();
+    }
+    if (audios[index].cover == null) {
+      audios[index].cover = await AudioUtil.getCover(
+        _currentAudio!.id,
+        coverSize: CoverSize.banner,
+      );
+    }
+    super.playerService.play();
+    bloc.add(AutoPlayNext());
+    (audioHandler as JustAudioNotificationHandler).setMediaItemFrom(
+      audios[index],
+      cover: Platform.isLinux ? audios[index].cover : null,
+    );
+    _loadChunk(index);
+    await PlayerStateStorage.saveLastAudio(_currentAudio!);
+    await PlayerStateStorage.saveSource(AudioSource.local);
+  }
+
+  @override
+  Future<AudioEntity> next({bool force = false}) async {
+    int newIndex = _getIndex(true, force: force);
+    if (newIndex == -1) {
+      await stop();
+      return audios[index];
+    }
+    index = newIndex;
+    await play(index);
+    return audios[index];
+  }
+
+  @override
+  Future<AudioEntity> previous() async {
+    index = _getIndex(false, force: true);
+    await play(index);
+    return audios[index];
+  }
+
+  @override
+  Future<void> togglePlayState() async {
+    _audioChangedController.add(_currentAudio);
+    bloc.add(TogglePlay());
+    await super.playerService.togglePlaying();
+  }
+
+  @override
+  Future<void> stop() async {
+    _audioChangedController.add(null);
+    await super.playerService.release();
+    bloc.add(TogglePlay());
+  }
+
+  Future<void> removeAudio(AudioEntity audio) async {
+    int removedIndex = audios.indexOf(audio);
+    if (removedIndex == -1) return;
+    audios.removeAt(removedIndex);
+    if (audios.isEmpty) {
+      index = 0;
+      return;
+    }
+    if (index >= audios.length) {
+      index = audios.length - 1;
+    }
+    final bool isShuffle = shuffleMode == ShuffleMode.shuffle;
+    if (isShuffle) {
+      _shuffle.removeWhere((i) => i == removedIndex);
+      for (int i = 0; i < _shuffle.length; i++) {
+        if (_shuffle[i] > removedIndex) {
+          _shuffle[i] -= 1;
+        }
+      }
+      if (shuffleIndex >= _shuffle.length) {
+        shuffleIndex = 0;
+      }
+    }
+    if (_currentAudio == audio) {
+      await play(isShuffle ? _shuffle[shuffleIndex] : index);
+    }
+  }
+
+  int _getIndex(bool forward, {bool force = false}) {
+    bool isShuffle = shuffleMode == ShuffleMode.shuffle;
+    if (repeatMode == AudioRepeatMode.repeatOne && !force) {
+      if (isShuffle) {
+        return _shuffle[shuffleIndex];
+      } else {
+        return index;
+      }
+    }
+    if (forward && !force && repeatMode == AudioRepeatMode.noRepeat) {
+      if (isShuffle && shuffleIndex + 1 == _shuffle.length) {
+        return -1;
+      } else if (index + 1 == audios.length) {
+        return -1;
+      }
+    }
+    if (isShuffle) {
+      shuffleIndex =
+          (shuffleIndex + (forward ? 1 : -1) + _shuffle.length) %
+          _shuffle.length;
+      return _shuffle[shuffleIndex];
+    } else {
+      index = (index + (forward ? 1 : -1) + audios.length) % audios.length;
+      return index;
+    }
+  }
+
+  Future<void> _loadChunk(int index) async {
+    audios[index].cover ??= await AudioUtil.getCover(
+      audios[index].id,
+      coverSize: CoverSize.banner,
+    );
+    int start = (index - 5).clamp(0, audios.length - 1);
+    int end = (index + 5).clamp(0, audios.length - 1);
+    List<int> indices;
+    if (isShuffle() && _shuffle.isNotEmpty) {
+      start = (shuffleIndex - 5).clamp(0, _shuffle.length - 1);
+      end = (shuffleIndex + 5).clamp(0, _shuffle.length - 1);
+      indices = _shuffle.sublist(start, end + 1);
+    } else {
+      indices = List.generate(end - start + 1, (i) => start + i);
+    }
+    for (final i in indices) {
+      final audio = audios[i];
+      audio.cover ??= await AudioUtil.getCover(
+        audio.id,
+        coverSize: CoverSize.banner,
+      );
+      audios[i] = audio;
+    }
+  }
+
+  Future<void> _loadBanner() async {
+    if (Platform.isLinux) return;
+    if (audios.isEmpty) return;
+
+    final params = _LoadCoversParams(
+      audioIds: audios.map((a) => a.id).toList(),
+      coverSize: CoverSize.banner,
+      rootIsolateToken: RootIsolateToken.instance!,
+    );
+
+    final Map<String, Uint8List?> covers = await compute(
+      _loadCoversInIsolate,
+      params,
+    );
+
+    for (int i = 0; i < audios.length; i++) {
+      final cover = covers['${audios[i].id}'];
+      if (cover == null) continue;
+      audios[i].cover = cover;
+      AudioUtil.seedCoverCache(audios[i].id, CoverSize.banner, cover);
+    }
+  }
+}
+
+class _LoadCoversParams {
+  const _LoadCoversParams({
+    required this.audioIds,
+    required this.coverSize,
+    required this.rootIsolateToken,
+  });
+
+  final List<int> audioIds;
+  final CoverSize coverSize;
+  final RootIsolateToken rootIsolateToken;
+}
+
+Future<Map<String, Uint8List?>> _loadCoversInIsolate(
+  _LoadCoversParams params,
+) async {
+  BackgroundIsolateBinaryMessenger.ensureInitialized(params.rootIsolateToken);
+
+  final Map<String, Uint8List?> result = {};
+  for (final id in params.audioIds) {
+    result['$id'] = await AudioUtil.getCover(id, coverSize: params.coverSize);
+  }
+  return result;
+}

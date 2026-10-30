@@ -1,0 +1,24 @@
+🎵 Sound Center is a modern, open-source audio player built to bring your music, podcasts, and online audio together in one seamless experience.
+
+Whether you're managing your personal music library, catching up on your favorite podcasts, or discovering new online audio, Sound Center gives you a simple, smooth, and powerful way to enjoy your content—all in one place.
+
+✨ Current Features:
+
+🎧 Local Music Player:
+Enjoy high-quality playback of the audio files stored on your device and keep your personal music library at your fingertips.
+
+🎙️ Podcast Player:
+Easily play and manage your favorite podcasts alongside your personal music collection.
+
+🌐 Stream Player:
+Discover, search, play, and manage online audio streams from a single, convenient interface.
+
+☁️ Cloud Player:
+Search, play, and manage DRM-free audio from SoundCloud directly within Sound Center.
+
+🚀 Planned Features for Future Versions:
+
+🛠️ Quality-of-Life Improvements:
+We're working on even more useful tools and features, including lyrics search, tag editing, downloading, song detection, and more.
+
+💡 Sound Center is continuously evolving. Join us on GitHub, contribute to the project, report issues, and follow the journey as Sound Center grows.

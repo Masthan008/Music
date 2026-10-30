@@ -1,0 +1,77 @@
+import 'dart:async';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:podcast_search/podcast_search.dart';
+import 'package:sound_center/core/constants/constants.dart';
+import 'package:sound_center/features/podcast/data/repository/podcast_player_rpository_imp.dart';
+import 'package:sound_center/features/podcast/presentation/bloc/podcast_bloc.dart';
+import 'package:sound_center/features/podcast/presentation/widgets/podcast_templates/episode/episode_template.dart';
+import 'package:sound_center/shared/theme/themes.dart';
+
+class Episodes extends StatefulWidget {
+  const Episodes({
+    super.key,
+    required this.episodes,
+    this.bestImageUrl,
+    required this.feedUrl,
+  });
+
+  final List<Episode> episodes;
+  final String feedUrl;
+  final String? bestImageUrl;
+
+  @override
+  State<Episodes> createState() => _EpisodesState();
+}
+
+class _EpisodesState extends State<Episodes> {
+  final PodcastPlayerRepositoryImp imp = PodcastPlayerRepositoryImp();
+  Episode? currentEpisode;
+  late final StreamSubscription? episodeSub;
+
+  @override
+  void initState() {
+    super.initState();
+    episodeSub = imp.episodeChangedStream.listen((_) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    episodeSub?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    currentEpisode = imp.getCurrentEpisode;
+    return SliverPadding(
+      padding: const EdgeInsets.only(bottom: 120),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+          Episode episode = widget.episodes[index];
+          episode.imageUrl ??= widget.bestImageUrl;
+          final isCurrent = currentEpisode?.guid == episode.guid;
+          return Container(
+            key: ValueKey(episode.guid),
+            height: LIST_ITEM_HEIGHT,
+            color: isCurrent
+                ? ThemeManager.current.mediaColor
+                : Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                setState(() {});
+                imp.feedUrl = widget.feedUrl;
+
+                BlocProvider.of<PodcastBloc>(
+                  context,
+                ).add(PlayPodcast(episodes: widget.episodes, index: index));
+              },
+              child: EpisodeTemplate(episode: episode),
+            ),
+          );
+        }, childCount: widget.episodes.length),
+      ),
+    );
+  }
+}

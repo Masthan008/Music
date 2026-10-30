@@ -1,0 +1,405 @@
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:sound_center/core_view/current_media.dart';
+import 'package:sound_center/features/settings/presentation/bloc/setting_bloc.dart';
+import 'package:sound_center/generated/l10n.dart';
+import 'package:sound_center/shared/theme/themes.dart';
+import 'package:sound_center/shared/widgets/text_field_box.dart';
+
+class ThemeDesigner extends StatefulWidget {
+  const ThemeDesigner({super.key, this.themeName});
+
+  final String? themeName;
+
+  @override
+  State<ThemeDesigner> createState() => _ThemeDesignerState();
+}
+
+class _ThemeDesignerState extends State<ThemeDesigner> {
+  late Brightness brightness;
+  late Color scaffoldBackground;
+  late Color thumbColor;
+  late Color appBarBackground;
+  late Color shadowColor;
+  late Color mediaColor;
+  late Color iconColor;
+  late double blur;
+  late double opacity;
+  late CustomTextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = CustomTextEditingController(
+      validator: (text) {
+        final name = text?.trim() ?? "";
+        return ThemeManager.getTheme(name) == null &&
+            name.isNotEmpty &&
+            name != 'green' &&
+            name != 'dark' &&
+            name != 'light';
+      },
+    );
+    AppThemeData theme;
+    if (widget.themeName != null) {
+      _controller.text = widget.themeName!;
+      theme = ThemeManager.fromId(widget.themeName!);
+    } else {
+      theme = ThemeManager.current;
+    }
+    final ThemeData themeData = ThemeManager.getThemeData(theme);
+    brightness = themeData.brightness;
+    scaffoldBackground = themeData.scaffoldBackgroundColor;
+    thumbColor = themeData.sliderTheme.thumbColor ?? Colors.white;
+    appBarBackground = themeData.appBarTheme.backgroundColor ?? Colors.white;
+    shadowColor = themeData.appBarTheme.shadowColor ?? Colors.transparent;
+    iconColor = themeData.iconTheme.color ?? Colors.white;
+    mediaColor = theme.mediaColor;
+    blur = theme.blur;
+    opacity = theme.opacity;
+    _checkClipboard();
+  }
+
+  Future<void> _checkClipboard() async {
+    if (widget.themeName != null) return;
+    final data = await Clipboard.getData('text/plain');
+    if (data?.text == null) return;
+    try {
+      final decoded = jsonDecode(data!.text!);
+      final AppThemeData theme = AppThemeData.fromJsonForStorage(decoded);
+      final ThemeData themeData = ThemeManager.getThemeData(theme);
+      _controller.text = theme.id;
+      brightness = themeData.brightness;
+      scaffoldBackground = themeData.scaffoldBackgroundColor;
+      thumbColor = themeData.sliderTheme.thumbColor ?? Colors.white;
+      appBarBackground = themeData.appBarTheme.backgroundColor ?? Colors.white;
+      shadowColor = themeData.appBarTheme.shadowColor ?? Colors.transparent;
+      iconColor = themeData.iconTheme.color ?? Colors.white;
+      mediaColor = theme.mediaColor;
+      blur = theme.blur;
+      opacity = theme.opacity;
+      setState(() {});
+    } catch (_) {}
+  }
+
+  late AppThemeData theme;
+
+  @override
+  Widget build(BuildContext context) {
+    theme = AppThemeData(
+      id: _controller.text.trim(),
+      brightness: brightness,
+      scaffoldBackground: scaffoldBackground,
+      thumbColor: thumbColor,
+      appBarBackground: appBarBackground,
+      appBarShadowColor: shadowColor,
+      mediaColor: mediaColor,
+      iconColor: iconColor,
+      blur: blur,
+      opacity: opacity,
+    );
+    return Theme(
+      data: ThemeManager.getThemeData(theme),
+      child: Scaffold(
+        appBar: AppBar(),
+        body: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              child: SingleChildScrollView(
+                child: Column(
+                  spacing: 15,
+                  crossAxisAlignment: .start,
+                  children: [
+                    TextFieldBox(
+                      controller: _controller,
+                      errorText: S.of(context).nameIsUsed,
+                      labelText: S.of(context).themeName,
+                      maxLines: 1,
+                      textInputAction: TextInputAction.done,
+                      margin: EdgeInsets.only(top: 10),
+                      validator: (text) {
+                        final name = text?.trim() ?? "";
+                        return name == widget.themeName ||
+                            (ThemeManager.getTheme(name) == null &&
+                                name != 'green' &&
+                                name != 'dark' &&
+                                name != 'light');
+                      },
+                    ),
+                    RadioGroup<Brightness>(
+                      onChanged: (v) {
+                        setState(() => brightness = v!);
+                      },
+                      groupValue: brightness,
+                      child: Row(
+                        mainAxisAlignment: .spaceEvenly,
+                        children: [
+                          InkWell(
+                            onTap: () =>
+                                setState(() => brightness = Brightness.light),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Radio<Brightness>(value: Brightness.light),
+                                  Text(S.of(context).light),
+                                ],
+                              ),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () =>
+                                setState(() => brightness = Brightness.dark),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Radio<Brightness>(value: Brightness.dark),
+                                  Text(S.of(context).dark),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    _ItemEntry(
+                      text: S.of(context).appBarBackground,
+                      color: appBarBackground,
+                      onChanged: (current) =>
+                          setState(() => appBarBackground = current),
+                    ),
+                    _ItemEntry(
+                      text: S.of(context).scaffoldBackground,
+                      color: scaffoldBackground,
+                      onChanged: (current) =>
+                          setState(() => scaffoldBackground = current),
+                    ),
+                    _ItemEntry(
+                      text: S.of(context).shadowColor,
+                      color: shadowColor,
+                      onChanged: (current) =>
+                          setState(() => shadowColor = current),
+                    ),
+                    _ItemEntry(
+                      text: S.of(context).iconColor,
+                      color: iconColor,
+                      onChanged: (current) =>
+                          setState(() => iconColor = current),
+                    ),
+                    _ItemEntry(
+                      text: S.of(context).thumbColor,
+                      color: thumbColor,
+                      onChanged: (current) =>
+                          setState(() => thumbColor = current),
+                    ),
+                    _ItemEntry(
+                      text: S.of(context).currentMediaColor,
+                      color: mediaColor,
+                      onChanged: (current) =>
+                          setState(() => mediaColor = current),
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(width: 70, child: Text(S.of(context).blur)),
+                        Expanded(
+                          child: Directionality(
+                            textDirection: .ltr,
+                            child: Slider(
+                              min: 0,
+                              value: blur,
+                              max: 20,
+                              divisions: 2000,
+                              inactiveColor: Colors.grey,
+                              label: blur.toStringAsFixed(2),
+                              onChanged: (value) => setState(() {
+                                blur = double.parse(value.toStringAsFixed(2));
+                              }),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 40,
+                          child: Text(
+                            blur.toStringAsFixed(2),
+                            textAlign: TextAlign.end,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(width: 70, child: Text(S.of(context).opacity)),
+                        Expanded(
+                          child: Directionality(
+                            textDirection: .ltr,
+                            child: Slider(
+                              min: 0,
+                              value: opacity,
+                              max: 1,
+                              divisions: 100,
+                              inactiveColor: Colors.grey,
+                              label: opacity.toStringAsFixed(2),
+                              onChanged: (value) => setState(() {
+                                opacity = double.parse(
+                                  value.toStringAsFixed(2),
+                                );
+                              }),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 40,
+                          child: Text(
+                            opacity.toStringAsFixed(2),
+                            textAlign: TextAlign.end,
+                          ),
+                        ),
+                      ],
+                    ),
+                    _buildButtonRow(),
+                    SizedBox(height: 90),
+                  ],
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: CurrentMedia(
+                key: ValueKey((mediaColor, blur, opacity)),
+                color: mediaColor,
+                blur: blur,
+                opacity: opacity,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildButtonRow() {
+    return Directionality(
+      textDirection: .ltr,
+      child: Row(
+        mainAxisAlignment: .spaceEvenly,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              AppThemeData themeData = AppThemeData(
+                id: _controller.text.trim(),
+                brightness: brightness,
+                scaffoldBackground: scaffoldBackground,
+                thumbColor: thumbColor,
+                appBarBackground: appBarBackground,
+                appBarShadowColor: shadowColor,
+                mediaColor: mediaColor,
+                iconColor: iconColor,
+                blur: blur,
+                opacity: opacity,
+              );
+              Clipboard.setData(
+                ClipboardData(text: jsonEncode(themeData.toJsonForStorage())),
+              );
+            },
+            child: Text(S.of(context).copy),
+          ),
+          ElevatedButton(onPressed: saveTheme, child: Text(S.of(context).ok)),
+        ],
+      ),
+    );
+  }
+
+  void saveTheme() {
+    if (!_controller.isValid()) {
+      final allCustomThemes = ThemeManager.allCustomThemes.length;
+      _controller.text = "Custom Theme-${allCustomThemes + 1}";
+    }
+
+    final themeData = AppThemeData(
+      id: _controller.text.trim(),
+      brightness: brightness,
+      scaffoldBackground: scaffoldBackground,
+      thumbColor: thumbColor,
+      appBarBackground: appBarBackground,
+      appBarShadowColor: shadowColor,
+      mediaColor: mediaColor,
+      iconColor: iconColor,
+      blur: blur,
+      opacity: opacity,
+    );
+    if (widget.themeName != null) {
+      ThemeManager.replaceCustomTheme(widget.themeName!, themeData);
+    } else {
+      ThemeManager.addCustomTheme(themeData);
+    }
+
+    BlocProvider.of<SettingBloc>(context).add(ChangeTheme(themeData.id));
+
+    Navigator.pop(context);
+  }
+}
+
+class _ItemEntry extends StatelessWidget {
+  const _ItemEntry({
+    required this.text,
+    required this.color,
+    required this.onChanged,
+  });
+
+  final String text;
+  final Color color;
+  final ValueChanged<Color> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (_) {
+            return AlertDialog(
+              content: SingleChildScrollView(
+                child: ColorPicker(
+                  pickerColor: color,
+                  onColorChanged: onChanged,
+                  hexInputBar: true,
+                ),
+              ),
+              actions: <Widget>[
+                ElevatedButton(
+                  child: Text(S.of(context).ok),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+      child: Row(
+        mainAxisAlignment: .spaceEvenly,
+        children: [
+          Text(text),
+          Spacer(),
+          Card(
+            shape: CircleBorder(),
+            margin: EdgeInsets.zero,
+            child: Container(
+              width: 30,
+              height: 30,
+              margin: const EdgeInsets.all(5),
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

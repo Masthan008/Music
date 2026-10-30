@@ -1,0 +1,81 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:sound_center/core_view/current_media.dart';
+import 'package:sound_center/database/drift/database.dart';
+import 'package:sound_center/features/stream/data/repository/stream_repository_imp.dart';
+import 'package:sound_center/features/stream/domain/entity/stream_sub_entity.dart';
+import 'package:sound_center/features/stream/presentation/bloc/stream_bloc.dart';
+import 'package:sound_center/features/stream/presentation/pages/stream_detail/icecast_stream.dart';
+import 'package:sound_center/features/stream/presentation/pages/stream_detail/radio_browser_stream.dart';
+import 'package:sound_center/shared/widgets/confirm_dialog.dart';
+
+class StreamDetail extends StatefulWidget {
+  const StreamDetail({super.key, required this.stream});
+
+  final StreamSubEntity stream;
+
+  @override
+  State<StreamDetail> createState() => _StreamDetailState();
+}
+
+class _StreamDetailState extends State<StreamDetail> {
+  final StreamRepositoryImp repository = StreamRepositoryImp(AppDatabase());
+
+  late String streamUrl;
+  late StreamBloc bloc;
+
+  @override
+  void initState() {
+    streamUrl = widget.stream.url;
+    bloc = BlocProvider.of<StreamBloc>(context);
+    super.initState();
+  }
+
+  Future<bool> _subscribe(StreamSubEntity sub) async {
+    bool subscribed = await repository.isSubscribed(sub.url);
+    StreamEvent? event;
+    if (subscribed) {
+      final confirmed =
+          await showDialog<bool>(
+            context: context,
+            builder: (_) => const ConfirmDialog(),
+          ) ??
+          false;
+      if (!confirmed) return false;
+      event = UnSubscribeFromStream(sub);
+    } else {
+      event = SubscribeToStream(sub);
+    }
+    bloc.add(event);
+    return true;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Widget content = widget.stream.uuid != null
+        ? RadioStreamView(
+            stream: widget.stream,
+            subscribe: _subscribe,
+            repository: repository,
+          )
+        : IcecastStreamView(
+            streamUrl: streamUrl,
+            subscribe: _subscribe,
+            repository: repository,
+          );
+    return Scaffold(
+      appBar: widget.stream.uuid != null ? null : AppBar(),
+      body: Stack(
+        children: [
+          content,
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: const CurrentMedia(key: Key("streamDetail")),
+          ),
+        ],
+      ),
+    );
+  }
+}

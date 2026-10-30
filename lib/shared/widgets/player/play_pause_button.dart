@@ -1,0 +1,51 @@
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_svg/svg.dart';
+
+class PlayPauseButton extends StatelessWidget {
+  final bool isPlaying;
+  final bool isLoading;
+  final VoidCallback onPressed;
+
+  const PlayPauseButton({
+    super.key,
+    required this.isPlaying,
+    required this.onPressed,
+    this.isLoading = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        if (isLoading)
+          SizedBox(
+            width: 55,
+            height: 55,
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5,
+              color: Theme.of(context).iconTheme.color!.withValues(alpha: 0.5),
+            ),
+          ),
+        InkWell(
+          borderRadius: BorderRadius.circular(100),
+          onTap: onPressed,
+          child: Container(
+            width: 60,
+            height: 60,
+            alignment: Alignment.center,
+            child: SvgPicture.asset(
+              isPlaying ? 'assets/icons/pause.svg' : 'assets/icons/play.svg',
+              width: 30,
+              height: 30,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).iconTheme.color!,
+                BlendMode.srcIn,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

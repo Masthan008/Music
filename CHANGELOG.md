@@ -1,0 +1,44 @@
+# 1.2.0
+
+* Add tabs for categorized content such as Favorites, Artists, and Folders
+* Improve the music delete and share experience
+* Improve cover loading performance
+* Improve backup file loading performance
+* Improve Play Queue track swap animations
+
+# 1.1.0
+
+* Add Play Queue and manage order of play
+* Add a few effects to current media and play bottom shit
+* Add opacity and blur effect into theme designer
+* make current media widget floating
+* Improve Code base by extract shared logic between Player Repositories
+
+# 1.0.0
+
+* Add cloud based audios using SoundCloud (Only DRM Free audios)
+* Add cloud playback history
+* Improve navigation UX
+* Improve App UI rebuild overhead
+* Fix loading indicator in current media widget
+* Fix song resuming after sleep while paused on Desktop
+
+# 1.0.0-beta.6
+
+* Fixed notification cover image issues in Streams
+* Fixed network connection leaks by adding an internal proxy
+* Added ICY metadata fetching support for Linux
+* Added Backup and Restore functionality
+* Added Auto Restart podcast & stream when an error occurred
+
+## 1.0.0-beta.5
+
+* Added Radio Browser API for searching streams
+* Separated UI for Icecast streams
+* Fixed stream sharing issue
+* Fixed Direction issue in podcast descriptions
+* Removed automatic update checks and replaced them with a button in Settings
+
+## 1.0.0-beta.4
+
+* initial publish (local music and podcast)

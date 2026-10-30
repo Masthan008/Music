@@ -1,0 +1,853 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'intl/messages_all.dart';
+
+// **************************************************************************
+// Generator: Flutter Intl IDE plugin
+// Made by Localizely
+// **************************************************************************
+
+// ignore_for_file: non_constant_identifier_names, lines_longer_than_80_chars
+// ignore_for_file: join_return_with_assignment, prefer_final_in_for_each
+// ignore_for_file: avoid_redundant_argument_values, avoid_escaping_inner_quotes
+
+class S {
+  S();
+
+  static S? _current;
+
+  static S get current {
+    assert(
+      _current != null,
+      'No instance of S was loaded. Try to initialize the S delegate before accessing S.current.',
+    );
+    return _current!;
+  }
+
+  static const AppLocalizationDelegate delegate = AppLocalizationDelegate();
+
+  static Future<S> load(Locale locale) {
+    final name = (locale.countryCode?.isEmpty ?? false)
+        ? locale.languageCode
+        : locale.toString();
+    final localeName = Intl.canonicalizedLocale(name);
+    return initializeMessages(localeName).then((_) {
+      Intl.defaultLocale = localeName;
+      final instance = S();
+      S._current = instance;
+
+      return instance;
+    });
+  }
+
+  static S of(BuildContext context) {
+    final instance = S.maybeOf(context);
+    assert(
+      instance != null,
+      'No instance of S present in the widget tree. Did you add S.delegate in localizationsDelegates?',
+    );
+    return instance!;
+  }
+
+  static S? maybeOf(BuildContext context) {
+    return Localizations.of<S>(context, S);
+  }
+
+  /// `Title`
+  String get title {
+    return Intl.message('Title', name: 'title', desc: '', args: []);
+  }
+
+  /// `Artist`
+  String get artist {
+    return Intl.message('Artist', name: 'artist', desc: '', args: []);
+  }
+
+  /// `Album`
+  String get album {
+    return Intl.message('Album', name: 'album', desc: '', args: []);
+  }
+
+  /// `Unknown`
+  String get unknown {
+    return Intl.message('Unknown', name: 'unknown', desc: '', args: []);
+  }
+
+  /// `Create time`
+  String get createTime {
+    return Intl.message('Create time', name: 'createTime', desc: '', args: []);
+  }
+
+  /// `Duration`
+  String get duration {
+    return Intl.message('Duration', name: 'duration', desc: '', args: []);
+  }
+
+  /// `Descending`
+  String get descending {
+    return Intl.message('Descending', name: 'descending', desc: '', args: []);
+  }
+
+  /// `what do you want?`
+  String get searchHint {
+    return Intl.message(
+      'what do you want?',
+      name: 'searchHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Scanning`
+  String get scanning {
+    return Intl.message('Scanning', name: 'scanning', desc: '', args: []);
+  }
+
+  /// `NO AUDIO!!`
+  String get noAudio {
+    return Intl.message('NO AUDIO!!', name: 'noAudio', desc: '', args: []);
+  }
+
+  /// `Delete`
+  String get delete {
+    return Intl.message('Delete', name: 'delete', desc: '', args: []);
+  }
+
+  /// `Share`
+  String get share {
+    return Intl.message('Share', name: 'share', desc: '', args: []);
+  }
+
+  /// `Unsubscribe`
+  String get unsubscribe {
+    return Intl.message('Unsubscribe', name: 'unsubscribe', desc: '', args: []);
+  }
+
+  /// `Subscribe`
+  String get subscribe {
+    return Intl.message('Subscribe', name: 'subscribe', desc: '', args: []);
+  }
+
+  /// `Description`
+  String get description {
+    return Intl.message('Description', name: 'description', desc: '', args: []);
+  }
+
+  /// `Downloaded Episodes`
+  String get downloadedEpisodes {
+    return Intl.message(
+      'Downloaded Episodes',
+      name: 'downloadedEpisodes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `NO PODCAST`
+  String get noPodcast {
+    return Intl.message('NO PODCAST', name: 'noPodcast', desc: '', args: []);
+  }
+
+  /// `OK`
+  String get ok {
+    return Intl.message('OK', name: 'ok', desc: '', args: []);
+  }
+
+  /// `Edit Title`
+  String get editTitle {
+    return Intl.message('Edit Title', name: 'editTitle', desc: '', args: []);
+  }
+
+  /// `Play Speed`
+  String get playSpeed {
+    return Intl.message('Play Speed', name: 'playSpeed', desc: '', args: []);
+  }
+
+  /// `Latest First`
+  String get latestFirst {
+    return Intl.message(
+      'Latest First',
+      name: 'latestFirst',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Oldest First`
+  String get oldestFirst {
+    return Intl.message(
+      'Oldest First',
+      name: 'oldestFirst',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A-Z`
+  String get az {
+    return Intl.message('A-Z', name: 'az', desc: '', args: []);
+  }
+
+  /// `Z-A`
+  String get za {
+    return Intl.message('Z-A', name: 'za', desc: '', args: []);
+  }
+
+  /// `Select Your Provider`
+  String get selectProvider {
+    return Intl.message(
+      'Select Your Provider',
+      name: 'selectProvider',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Get Api Key`
+  String get getApiKey {
+    return Intl.message('Get Api Key', name: 'getApiKey', desc: '', args: []);
+  }
+
+  /// `Settings`
+  String get settings {
+    return Intl.message('Settings', name: 'settings', desc: '', args: []);
+  }
+
+  /// `Podcast Api`
+  String get podcastApi {
+    return Intl.message('Podcast Api', name: 'podcastApi', desc: '', args: []);
+  }
+
+  /// `More Info`
+  String get moreInfo {
+    return Intl.message('More Info', name: 'moreInfo', desc: '', args: []);
+  }
+
+  /// `Submit`
+  String get submit {
+    return Intl.message('Submit', name: 'submit', desc: '', args: []);
+  }
+
+  /// `Are you sure about that?`
+  String get areYouSureAboutThat {
+    return Intl.message(
+      'Are you sure about that?',
+      name: 'areYouSureAboutThat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Yes`
+  String get yes {
+    return Intl.message('Yes', name: 'yes', desc: '', args: []);
+  }
+
+  /// `No`
+  String get no {
+    return Intl.message('No', name: 'no', desc: '', args: []);
+  }
+
+  /// `Sound Center`
+  String get soundCenter {
+    return Intl.message(
+      'Sound Center',
+      name: 'soundCenter',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Language`
+  String get language {
+    return Intl.message('Language', name: 'language', desc: '', args: []);
+  }
+
+  /// `Failed To Load Podcast`
+  String get loadFail {
+    return Intl.message(
+      'Failed To Load Podcast',
+      name: 'loadFail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Load Podcast`
+  String get loadPodcast {
+    return Intl.message(
+      'Load Podcast',
+      name: 'loadPodcast',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rss Feed`
+  String get rssFeed {
+    return Intl.message('Rss Feed', name: 'rssFeed', desc: '', args: []);
+  }
+
+  /// `Theme`
+  String get theme {
+    return Intl.message('Theme', name: 'theme', desc: '', args: []);
+  }
+
+  /// `Local`
+  String get local {
+    return Intl.message('Local', name: 'local', desc: '', args: []);
+  }
+
+  /// `Podcast`
+  String get podcast {
+    return Intl.message('Podcast', name: 'podcast', desc: '', args: []);
+  }
+
+  /// `----------------- THEM NAMES ----------------`
+  String get THEME_NAMES {
+    return Intl.message(
+      '----------------- THEM NAMES ----------------',
+      name: 'THEME_NAMES',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create New Theme`
+  String get createNewTheme {
+    return Intl.message(
+      'Create New Theme',
+      name: 'createNewTheme',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Light`
+  String get light {
+    return Intl.message('Light', name: 'light', desc: '', args: []);
+  }
+
+  /// `Dark`
+  String get dark {
+    return Intl.message('Dark', name: 'dark', desc: '', args: []);
+  }
+
+  /// `Green`
+  String get green {
+    return Intl.message('Green', name: 'green', desc: '', args: []);
+  }
+
+  /// `Orange`
+  String get orange {
+    return Intl.message('Orange', name: 'orange', desc: '', args: []);
+  }
+
+  /// `Purple`
+  String get purple {
+    return Intl.message('Purple', name: 'purple', desc: '', args: []);
+  }
+
+  /// `Appbar Background`
+  String get appBarBackground {
+    return Intl.message(
+      'Appbar Background',
+      name: 'appBarBackground',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `scaffold Background`
+  String get scaffoldBackground {
+    return Intl.message(
+      'scaffold Background',
+      name: 'scaffoldBackground',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `shadow`
+  String get shadowColor {
+    return Intl.message('shadow', name: 'shadowColor', desc: '', args: []);
+  }
+
+  /// `Slider`
+  String get thumbColor {
+    return Intl.message('Slider', name: 'thumbColor', desc: '', args: []);
+  }
+
+  /// `Icon`
+  String get iconColor {
+    return Intl.message('Icon', name: 'iconColor', desc: '', args: []);
+  }
+
+  /// `Current Media Background`
+  String get currentMediaColor {
+    return Intl.message(
+      'Current Media Background',
+      name: 'currentMediaColor',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This name is already used`
+  String get nameIsUsed {
+    return Intl.message(
+      'This name is already used',
+      name: 'nameIsUsed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Theme Name`
+  String get themeName {
+    return Intl.message('Theme Name', name: 'themeName', desc: '', args: []);
+  }
+
+  /// `Copy`
+  String get copy {
+    return Intl.message('Copy', name: 'copy', desc: '', args: []);
+  }
+
+  /// `Source Code`
+  String get sourceCode {
+    return Intl.message('Source Code', name: 'sourceCode', desc: '', args: []);
+  }
+
+  /// `There is a new update`
+  String get thereIsANewUpdate {
+    return Intl.message(
+      'There is a new update',
+      name: 'thereIsANewUpdate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You're using the latest version.`
+  String get youAreUsingLatestVersion {
+    return Intl.message(
+      'You\'re using the latest version.',
+      name: 'youAreUsingLatestVersion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update Now`
+  String get updateNow {
+    return Intl.message('Update Now', name: 'updateNow', desc: '', args: []);
+  }
+
+  /// `Downloading`
+  String get downloading {
+    return Intl.message('Downloading', name: 'downloading', desc: '', args: []);
+  }
+
+  /// `Download Completed`
+  String get downloadCompleted {
+    return Intl.message(
+      'Download Completed',
+      name: 'downloadCompleted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Download Stopped`
+  String get downloadStopped {
+    return Intl.message(
+      'Download Stopped',
+      name: 'downloadStopped',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error In Download`
+  String get errorInDownload {
+    return Intl.message(
+      'Error In Download',
+      name: 'errorInDownload',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Stream`
+  String get stream {
+    return Intl.message('Stream', name: 'stream', desc: '', args: []);
+  }
+
+  /// `Url Link`
+  String get urlLink {
+    return Intl.message('Url Link', name: 'urlLink', desc: '', args: []);
+  }
+
+  /// `Load Stream`
+  String get loadStream {
+    return Intl.message('Load Stream', name: 'loadStream', desc: '', args: []);
+  }
+
+  /// `Link is wrong or server is stopped`
+  String get linkIsWrongOrServerIsStopped {
+    return Intl.message(
+      'Link is wrong or server is stopped',
+      name: 'linkIsWrongOrServerIsStopped',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Play`
+  String get play {
+    return Intl.message('Play', name: 'play', desc: '', args: []);
+  }
+
+  /// `No Stream`
+  String get noStream {
+    return Intl.message('No Stream', name: 'noStream', desc: '', args: []);
+  }
+
+  /// `Host`
+  String get host {
+    return Intl.message('Host', name: 'host', desc: '', args: []);
+  }
+
+  /// `server ID`
+  String get serverId {
+    return Intl.message('server ID', name: 'serverId', desc: '', args: []);
+  }
+
+  /// `Location`
+  String get location {
+    return Intl.message('Location', name: 'location', desc: '', args: []);
+  }
+
+  /// `Admin Info`
+  String get adminInfo {
+    return Intl.message('Admin Info', name: 'adminInfo', desc: '', args: []);
+  }
+
+  /// `Started At`
+  String get startedAt {
+    return Intl.message('Started At', name: 'startedAt', desc: '', args: []);
+  }
+
+  /// `Notification`
+  String get notification {
+    return Intl.message(
+      'Notification',
+      name: 'notification',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Country`
+  String get country {
+    return Intl.message('Country', name: 'country', desc: '', args: []);
+  }
+
+  /// `Tags`
+  String get tags {
+    return Intl.message('Tags', name: 'tags', desc: '', args: []);
+  }
+
+  /// `Format`
+  String get format {
+    return Intl.message('Format', name: 'format', desc: '', args: []);
+  }
+
+  /// `Website`
+  String get website {
+    return Intl.message('Website', name: 'website', desc: '', args: []);
+  }
+
+  /// `Votes`
+  String get votes {
+    return Intl.message('Votes', name: 'votes', desc: '', args: []);
+  }
+
+  /// `Clicks`
+  String get clicks {
+    return Intl.message('Clicks', name: 'clicks', desc: '', args: []);
+  }
+
+  /// `Check for Updates via GitHub`
+  String get checkForUpdates {
+    return Intl.message(
+      'Check for Updates via GitHub',
+      name: 'checkForUpdates',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Loading`
+  String get loading {
+    return Intl.message('Loading', name: 'loading', desc: '', args: []);
+  }
+
+  /// `Error in loading`
+  String get errorInLoading {
+    return Intl.message(
+      'Error in loading',
+      name: 'errorInLoading',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Station Count`
+  String get stationCount {
+    return Intl.message(
+      'Station Count',
+      name: 'stationCount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `If you installed this app from an app store, we recommend updating it through the same store.`
+  String get recommendUpdateViaStore {
+    return Intl.message(
+      'If you installed this app from an app store, we recommend updating it through the same store.',
+      name: 'recommendUpdateViaStore',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Backup & Restore`
+  String get backupRestore {
+    return Intl.message(
+      'Backup & Restore',
+      name: 'backupRestore',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Export Data`
+  String get exportData {
+    return Intl.message('Export Data', name: 'exportData', desc: '', args: []);
+  }
+
+  /// `Import Data`
+  String get importData {
+    return Intl.message('Import Data', name: 'importData', desc: '', args: []);
+  }
+
+  /// `Backup restored successfully.`
+  String get backupRestoredSuccessfully {
+    return Intl.message(
+      'Backup restored successfully.',
+      name: 'backupRestoredSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Backup partially restored. Some data could not be imported.`
+  String get backupPartiallyRestoredSomeDataCouldNotBeImported {
+    return Intl.message(
+      'Backup partially restored. Some data could not be imported.',
+      name: 'backupPartiallyRestoredSomeDataCouldNotBeImported',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to restore backup.`
+  String get failedToRestoreBackup {
+    return Intl.message(
+      'Failed to restore backup.',
+      name: 'failedToRestoreBackup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `----------------- STREAM NAMES ----------------`
+  String get STREAM_NAMES {
+    return Intl.message(
+      '----------------- STREAM NAMES ----------------',
+      name: 'STREAM_NAMES',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `SoundCloud`
+  String get cloud {
+    return Intl.message('SoundCloud', name: 'cloud', desc: '', args: []);
+  }
+
+  /// `NO DRM FREE MUSIC`
+  String get noDrmFreeMusic {
+    return Intl.message(
+      'NO DRM FREE MUSIC',
+      name: 'noDrmFreeMusic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No History`
+  String get noHistory {
+    return Intl.message('No History', name: 'noHistory', desc: '', args: []);
+  }
+
+  /// `Playlists`
+  String get playlists {
+    return Intl.message('Playlists', name: 'playlists', desc: '', args: []);
+  }
+
+  /// `Tracks`
+  String get tracks {
+    return Intl.message('Tracks', name: 'tracks', desc: '', args: []);
+  }
+
+  /// `Clear History`
+  String get clearHistory {
+    return Intl.message(
+      'Clear History',
+      name: 'clearHistory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Blur`
+  String get blur {
+    return Intl.message('Blur', name: 'blur', desc: '', args: []);
+  }
+
+  /// `Opacity`
+  String get opacity {
+    return Intl.message('Opacity', name: 'opacity', desc: '', args: []);
+  }
+
+  /// `Player Style`
+  String get playerStyle {
+    return Intl.message(
+      'Player Style',
+      name: 'playerStyle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Solid Color`
+  String get solidColor {
+    return Intl.message('Solid Color', name: 'solidColor', desc: '', args: []);
+  }
+
+  /// `Blur Cover`
+  String get blurCover {
+    return Intl.message('Blur Cover', name: 'blurCover', desc: '', args: []);
+  }
+
+  /// `Glass`
+  String get glass {
+    return Intl.message('Glass', name: 'glass', desc: '', args: []);
+  }
+
+  /// `Play Queue`
+  String get playQueue {
+    return Intl.message('Play Queue', name: 'playQueue', desc: '', args: []);
+  }
+
+  /// `All Songs`
+  String get categoryAllSongs {
+    return Intl.message(
+      'All Songs',
+      name: 'categoryAllSongs',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Favorites`
+  String get categoryFavorites {
+    return Intl.message(
+      'Favorites',
+      name: 'categoryFavorites',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Playlists`
+  String get categoryPlaylists {
+    return Intl.message(
+      'Playlists',
+      name: 'categoryPlaylists',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Artists`
+  String get categoryArtists {
+    return Intl.message('Artists', name: 'categoryArtists', desc: '', args: []);
+  }
+
+  /// `Albums`
+  String get categoryAlbums {
+    return Intl.message('Albums', name: 'categoryAlbums', desc: '', args: []);
+  }
+
+  /// `Genres`
+  String get categoryGenres {
+    return Intl.message('Genres', name: 'categoryGenres', desc: '', args: []);
+  }
+
+  /// `Folders`
+  String get categoryFolders {
+    return Intl.message('Folders', name: 'categoryFolders', desc: '', args: []);
+  }
+
+  /// `Shuffle Play`
+  String get shufflePlay {
+    return Intl.message(
+      'Shuffle Play',
+      name: 'shufflePlay',
+      desc: '',
+      args: [],
+    );
+  }
+}
+
+class AppLocalizationDelegate extends LocalizationsDelegate<S> {
+  const AppLocalizationDelegate();
+
+  List<Locale> get supportedLocales {
+    return const <Locale>[
+      Locale.fromSubtags(languageCode: 'en'),
+      Locale.fromSubtags(languageCode: 'fa'),
+    ];
+  }
+
+  @override
+  bool isSupported(Locale locale) => _isSupported(locale);
+  @override
+  Future<S> load(Locale locale) => S.load(locale);
+  @override
+  bool shouldReload(AppLocalizationDelegate old) => false;
+
+  bool _isSupported(Locale locale) {
+    for (var supportedLocale in supportedLocales) {
+      if (supportedLocale.languageCode == locale.languageCode) {
+        return true;
+      }
+    }
+    return false;
+  }
+}

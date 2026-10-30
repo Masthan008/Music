@@ -1,0 +1,363 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:background_downloader/background_downloader.dart';
+// ignore: depend_on_referenced_packages
+import 'package:collection/collection.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:podcast_search/podcast_search.dart';
+import 'package:sound_center/core/constants/constants.dart';
+import 'package:sound_center/core/services/hls_downloader.dart';
+import 'package:sound_center/features/cloud/domain/entity/cloud_entity.dart';
+import 'package:sound_center/features/local_audio/presentation/bloc/local_bloc.dart';
+import 'package:sound_center/features/podcast/domain/entity/downloaded_episode_entity.dart';
+import 'package:sound_center/features/podcast/presentation/bloc/podcast_bloc.dart';
+
+/// State یک دانلود کلاود که هیچ‌وقت از طریق `_downloader.enqueue()` وارد
+/// موتور native نمی‌شه، پس نه در `downloader.database` رکورد داره و نه
+/// pause/resume نیتیو پلاگین روش اثر داره. این کلاس جایگزین همون اطلاعاته.
+class CloudDownloadState {
+  final DownloadTask task;
+  TaskStatus status;
+  double progress;
+
+  CloudDownloadState({
+    required this.task,
+    required this.status,
+    required this.progress,
+  });
+}
+
+/// کنترل‌کننده‌ی pause/resume واقعی برای دانلود دستی HLS. چون
+/// `_downloader.pause/resume` فقط روی تسک‌های enqueue‌شده در موتور native
+/// اثر داره، این کلاس همون رفتار رو در سطح اپلیکیشن پیاده می‌کنه: وقتی
+/// pause بشه، ورکرهای در حال دانلود segment فعلی‌شون رو تموم می‌کنن ولی
+/// segment بعدی رو شروع نمی‌کنن تا resume صدا زده بشه.
+class _CloudPauseController {
+  bool _paused = false;
+  Completer<void>? _resumeCompleter;
+
+  bool get isPaused => _paused;
+
+  void pause() {
+    if (_paused) return;
+    _paused = true;
+    _resumeCompleter = Completer<void>();
+  }
+
+  void resume() {
+    if (!_paused) return;
+    _paused = false;
+    _resumeCompleter?.complete();
+    _resumeCompleter = null;
+  }
+
+  Future<void> waitIfPaused() async {
+    while (_paused) {
+      await _resumeCompleter?.future;
+    }
+  }
+}
+
+class DownloadManager {
+  static final FileDownloader _downloader = FileDownloader();
+
+  static final StreamController<TaskUpdate> _updateController =
+      StreamController<TaskUpdate>.broadcast();
+
+  static Stream<TaskUpdate> get updates => _updateController.stream;
+
+  static final Map<String, dynamic> _downloads = {};
+
+  /// رجیستری در-حافظه‌ای state دانلودهای کلاود، کلید = "title-author".
+  /// چون این تسک‌ها enqueue نمی‌شن، این تنها منبع صحتیه که ویجت‌ها
+  /// می‌تونن هنگام باز شدن مجدد صفحه ازش پیشرفت فعلی رو بخونن.
+  static final Map<String, CloudDownloadState> _cloudStates = {};
+  static final Map<String, _CloudPauseController> _cloudPauseControllers = {};
+
+  static CloudDownloadState? cloudStateForKey(String key) => _cloudStates[key];
+
+  /// آیا تسک متعلق به گروه دانلود کلاود (دستی) هست یا خیر — برای اینکه
+  /// UI بتونه تشخیص بده باید از `pauseCloudDownload`/`resumeCloudDownload`
+  /// استفاده کنه یا از `pause`/`resume` عادی.
+  static bool isCloudTask(DownloadTask task) => task.group == 'cloud';
+
+  static void pauseCloudDownload(String key) {
+    final state = _cloudStates[key];
+    if (state == null) return;
+    _cloudPauseControllers[key]?.pause();
+    state.status = TaskStatus.paused;
+    _updateController.add(TaskStatusUpdate(state.task, TaskStatus.paused));
+  }
+
+  static void resumeCloudDownload(String key) {
+    final state = _cloudStates[key];
+    if (state == null) return;
+    _cloudPauseControllers[key]?.resume();
+    state.status = TaskStatus.running;
+    _updateController.add(TaskStatusUpdate(state.task, TaskStatus.running));
+  }
+
+  static Future<void> init() async {
+    await _downloader.start();
+    await _downloader.trackTasks();
+
+    _downloader.updates.listen((u) {
+      _updateController.add(u);
+      if (u is TaskStatusUpdate) {
+        final status = u;
+        if (status.status == TaskStatus.canceled) {
+          _downloader.database.deleteRecordWithId(u.task.taskId);
+          return;
+        }
+      }
+      onPodcastDownloadFinished(u);
+    });
+  }
+
+  static void setupNotification() {
+    String downloading = Intl.message("Downloading", name: "downloading");
+    String downloadCompleted = Intl.message(
+      "Download Completed",
+      name: "downloadCompleted",
+    );
+    String downloadStopped = Intl.message(
+      "Download Stopped",
+      name: "downloadStopped",
+    );
+    String errorInDownload = Intl.message(
+      "Error In Download",
+      name: "errorInDownload",
+    );
+    _downloader.configureNotification(
+      running: TaskNotification(downloading, '{filename}'),
+      complete: TaskNotification(downloadCompleted, '{filename}'),
+      paused: TaskNotification(downloadStopped, '{filename}'),
+      error: TaskNotification(errorInDownload, '{filename}'),
+      progressBar: true,
+      tapOpensFile: true,
+    );
+  }
+
+  static Future<DownloadTask?> downloadEpisode(Episode episode) async {
+    final directory = await _ensureDirectory();
+    String key = episode.title.trim();
+    if (episode.author != null) {
+      key += "-${episode.author?.trim()}";
+    }
+    _downloads['$key.mp3'] = episode;
+    final task = DownloadTask(
+      url: episode.contentUrl!,
+      filename: episode.title,
+      directory: directory,
+      baseDirectory: BaseDirectory.applicationDocuments,
+      updates: Updates.statusAndProgress,
+      requiresWiFi: false,
+      retries: 3,
+      allowPause: true,
+      group: 'podcasts',
+      metaData: '$key.mp3',
+    );
+    final success = await _downloader.enqueue(task);
+    return success ? task : null;
+  }
+
+  /// این تسک هیچ‌وقت با `_downloader.enqueue()` وارد موتور native نمی‌شه؛
+  /// دانلود واقعی به‌صورت دستی توسط [HlsDownloader] انجام می‌شه. برای
+  /// pause/resume واقعی از `pauseCloudDownload`/`resumeCloudDownload`
+  /// استفاده کنید، نه از `pause`/`resume` (که فقط روی تسک‌های native
+  /// enqueue‌شده کار می‌کنن).
+  static Future<DownloadTask?> downloadCloudTrack(
+    CloudTrack track,
+    String m3u8Url,
+  ) async {
+    String key = track.title.trim();
+    key += "-${track.author.trim()}";
+
+    final tempDir = await getTemporaryDirectory();
+    final tempPath = '${tempDir.path}/Cloud/$key.m4a';
+    await Directory('${tempDir.path}/Cloud').create(recursive: true);
+
+    _downloads['$key.m4a'] = track;
+
+    final task = DownloadTask(
+      url: m3u8Url,
+      filename: '$key.m4a',
+      directory: 'Cloud',
+      baseDirectory: BaseDirectory.temporary,
+      group: 'cloud',
+      metaData: '$key.m4a',
+    );
+
+    _cloudStates[key] = CloudDownloadState(
+      task: task,
+      status: TaskStatus.running,
+      progress: 0.0,
+    );
+    _cloudPauseControllers[key] = _CloudPauseController();
+
+    _runAsyncDownload(task, m3u8Url, tempPath, key);
+
+    return task;
+  }
+
+  static void _runAsyncDownload(
+    DownloadTask task,
+    String m3u8Url,
+    String tempPath,
+    String key,
+  ) async {
+    _updateController.add(TaskStatusUpdate(task, TaskStatus.running));
+    _cloudStates[key]?.status = TaskStatus.running;
+    final pauseController = _cloudPauseControllers[key];
+
+    try {
+      final file = await HlsDownloader.downloadAndMux(
+        m3u8Url: m3u8Url,
+        outputPath: tempPath,
+        waitIfPaused: pauseController?.waitIfPaused,
+        onProgress: (progress) {
+          _cloudStates[key]?.progress = progress;
+          _updateController.add(TaskProgressUpdate(task, progress));
+        },
+      );
+
+      if (!await file.exists()) {
+        throw Exception(
+          "The audio file was not downloaded or merged correctly",
+        );
+      }
+
+      String? newFilePath;
+
+      if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
+        final musicDir = await getApplicationDocumentsDirectory();
+        final destDir = Directory('${musicDir.path}/soundCenter');
+        await destDir.create(recursive: true);
+
+        // 🔄 Find a unique filename on Desktop by auto-incrementing
+        int counter = 1;
+        String uniquePath = '${destDir.path}/$key.m4a';
+        while (await File(uniquePath).exists()) {
+          uniquePath = '${destDir.path}/$key ($counter).m4a';
+          counter++;
+        }
+
+        final targetFile = File(uniquePath);
+        await file.copy(targetFile.path);
+        newFilePath = targetFile.path;
+      } else {
+        // 🔄 Prepare a unique local temporary file name before moving to Scoped Storage on Mobile
+        int counter = 1;
+        String uniqueTempPath = file.path;
+
+        final fileDir = file.parent.path;
+        while (await File(uniqueTempPath).exists() && counter > 1) {
+          uniqueTempPath = '$fileDir/$key ($counter).m4a';
+          counter++;
+        }
+
+        File fileToMove = file;
+        if (counter > 1) {
+          fileToMove = await file.rename(uniqueTempPath);
+        }
+
+        newFilePath = await _downloader.moveFileToSharedStorage(
+          fileToMove.path,
+          SharedStorage.audio,
+          directory: 'soundCenter',
+        );
+      }
+
+      if (newFilePath != null) {
+        _cloudStates[key]?.status = TaskStatus.complete;
+        _cloudStates[key]?.progress = 1.0;
+        _updateController.add(TaskStatusUpdate(task, TaskStatus.complete));
+        _updateController.add(TaskProgressUpdate(task, 1.0));
+
+        if (await file.exists()) {
+          await file.delete();
+        }
+      } else {
+        _cloudStates[key]?.status = TaskStatus.failed;
+        _updateController.add(TaskStatusUpdate(task, TaskStatus.failed));
+      }
+      final bloc = BlocProvider.of<LocalBloc>(NAVIGATOR_KEY.currentContext!);
+      bloc.add(GetLocalAudios());
+    } catch (e) {
+      _cloudStates[key]?.status = TaskStatus.failed;
+      _updateController.add(TaskStatusUpdate(task, TaskStatus.failed));
+    } finally {
+      _cloudPauseControllers.remove(key);
+    }
+  }
+
+  static Future<String> _ensureDirectory() async {
+    final dir = await getApplicationDocumentsDirectory();
+    final podcastDir = Directory('${dir.path}/Podcasts');
+    if (!await podcastDir.exists()) {
+      await podcastDir.create(recursive: true);
+    }
+    return 'Podcasts';
+  }
+
+  static Future<void> pause(DownloadTask task) => _downloader.pause(task);
+
+  static Future<bool> resume(DownloadTask task) => _downloader.resume(task);
+
+  static Future<void> cancel(DownloadTask task) async {
+    _downloader.cancel(task);
+    _downloader.database.deleteRecordWithId(task.taskId);
+
+    if (isCloudTask(task)) {
+      final key = _cloudStates.entries
+          .where((e) => e.value.task.taskId == task.taskId)
+          .map((e) => e.key)
+          .firstOrNull;
+      if (key != null) {
+        _cloudPauseControllers.remove(key);
+        _cloudStates.remove(key);
+      }
+    }
+  }
+
+  /// وقتی یک دانلود کلاود کامل شد و کاربر فایل رو مصرف کرد (یا هر زمان
+  /// دیگه‌ای که لازم شد)، می‌تونید state رو از رجیستری پاک کنید تا حافظه
+  /// بیخودی رشد نکنه. صدا زدنش اختیاریه.
+  static void clearCloudState(String key) {
+    _cloudStates.remove(key);
+    _cloudPauseControllers.remove(key);
+  }
+
+  static void onPodcastDownloadFinished(TaskUpdate update) async {
+    if (update is! TaskStatusUpdate) return;
+    if (update.status != TaskStatus.complete) return null;
+    final task = update.task;
+    if (task is! DownloadTask) return null;
+    final baseDirectory = await getApplicationDocumentsDirectory();
+    final path = "${baseDirectory.path}/${task.directory}/${task.filename}";
+    final file = File(path);
+    if (!await file.exists()) return null;
+    final title = task.metaData as String?;
+    if (title == null || title.isEmpty) return null;
+    final safeName = title;
+    final newPath = '${file.parent.path}/$safeName';
+    if (file.path != newPath) {
+      await file.rename(newPath);
+    }
+    Episode? episode = _downloads[task.metaData];
+    BuildContext? context = NAVIGATOR_KEY.currentContext;
+
+    if (episode != null && context != null) {
+      final bloc = BlocProvider.of<PodcastBloc>(NAVIGATOR_KEY.currentContext!);
+      final downloadEntity = DownloadedEpisodeEntity.fromEpisode(
+        _downloads[task.metaData]!,
+      );
+      bloc.add(DownloadEpisode(downloadEntity));
+      _downloads.remove(task.metaData);
+    }
+  }
+}

@@ -1,0 +1,208 @@
+import 'package:flutter/services.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:sound_center/shared/theme/themes.dart';
+
+class TextFieldBox extends StatefulWidget {
+  const TextFieldBox({
+    super.key,
+    this.controller,
+    this.textInputType,
+    this.labelText,
+    this.isPassword = false,
+    this.enabled = true,
+    this.canRequestFocus = true,
+    this.autofocus = false,
+    this.onSubmitted,
+    this.inputFormatters,
+    this.isDense,
+    this.suffixIcon,
+    this.prefixIcon,
+    this.validator,
+    this.onChanged,
+    this.maxLength,
+    this.maxLines,
+    this.textInputAction = TextInputAction.none,
+    this.textDirection,
+    this.useBorder = true,
+    this.hintText,
+    this.errorText,
+    this.onFocusChanged,
+    this.autofillHints,
+    this.margin = const EdgeInsets.all(10),
+  });
+
+  final TextEditingController? controller;
+  final TextInputType? textInputType;
+  final TextInputAction? textInputAction;
+  final bool isPassword;
+  final String? labelText;
+  final String? hintText;
+  final String? errorText;
+  final bool? enabled;
+  final bool autofocus;
+  final bool useBorder;
+  final int? maxLength;
+  final int? maxLines;
+  final bool? isDense;
+  final bool canRequestFocus;
+  final Widget? suffixIcon;
+  final Widget? prefixIcon;
+  final List<TextInputFormatter>? inputFormatters;
+  final Function(String text)? onSubmitted;
+  final bool Function(String?)? validator;
+  final ValueChanged<String>? onChanged;
+  final Function(FocusNode focuseNode)? onFocusChanged;
+  final TextDirection? textDirection;
+  final List<String>? autofillHints;
+  final EdgeInsets margin;
+
+  @override
+  State<TextFieldBox> createState() => _TextFieldBoxState();
+}
+
+class _TextFieldBoxState extends State<TextFieldBox> {
+  bool isValid() {
+    if (widget.validator == null || widget.controller == null) {
+      return true;
+    }
+    return widget.validator!(widget.controller!.text.trim());
+  }
+
+  final FocusNode focusNode = FocusNode();
+  CustomTextEditingController? controller;
+  TextDirection? textDirection;
+
+  void _handleTextChange(String value) {
+    if (widget.textDirection == null) {
+      // اگر شامل کاراکترهای راست به چپ باشد، جهت را تغییر بده
+      if (RegExp(r'[\u0600-\u06FF]').hasMatch(value)) {
+        setState(() {
+          textDirection = TextDirection.rtl;
+        });
+      } else {
+        setState(() {
+          textDirection = TextDirection.ltr;
+        });
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    textDirection = widget.textDirection;
+    if (widget.controller is CustomTextEditingController) {
+      controller = widget.controller as CustomTextEditingController;
+      controller?.validator ??= widget.validator;
+    }
+    super.initState();
+    if (widget.validator != null) {
+      focusNode.addListener(() {
+        if (!focusNode.hasFocus) {
+          setState(() {});
+        }
+        if (widget.onFocusChanged != null) {
+          widget.onFocusChanged!(focusNode);
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final borderRadius = BorderRadius.all(Radius.circular(5));
+    final borderSide = BorderSide(
+      color: ThemeManager.current.iconColor.withValues(alpha: 0.2),
+    );
+    return Container(
+      margin: widget.margin,
+      child: TextField(
+        controller: controller ?? widget.controller,
+        obscureText: widget.isPassword,
+        keyboardType: widget.textInputType,
+        onSubmitted: widget.onSubmitted,
+        maxLength: widget.maxLength,
+        maxLines: widget.maxLines,
+        textInputAction: widget.textInputAction,
+        enabled: widget.enabled,
+        textDirection: textDirection,
+        autofocus: widget.autofocus,
+        autofillHints: widget.autofillHints,
+        inputFormatters: widget.inputFormatters,
+        onChanged: (String value) {
+          _handleTextChange(value);
+          if (widget.onChanged != null) {
+            widget.onChanged!(value);
+          }
+        },
+        focusNode: focusNode,
+        canRequestFocus: widget.canRequestFocus,
+        textAlignVertical: TextAlignVertical.center,
+        decoration: InputDecoration(
+          labelText: widget.labelText,
+          contentPadding: const EdgeInsets.all(10.0),
+          hintText: widget.hintText,
+          hintStyle: const TextStyle(color: Colors.grey),
+          helperStyle: const TextStyle(color: Colors.grey),
+
+          counterText: '',
+          isDense: widget.isDense,
+          error: widget.validator != null
+              ? widget.validator!(widget.controller?.text)
+                    ? null
+                    : widget.errorText != null
+                    ? Text(widget.errorText!)
+                    : const SizedBox.shrink()
+              : null,
+          suffixIcon: widget.suffixIcon,
+          prefixIcon: widget.prefixIcon,
+          border: widget.useBorder
+              ? OutlineInputBorder(
+                  borderRadius: borderRadius,
+                  borderSide: borderSide,
+                )
+              : InputBorder.none,
+          focusedBorder: widget.useBorder
+              ? OutlineInputBorder(
+                  borderRadius: borderRadius,
+                  borderSide: borderSide,
+                )
+              : InputBorder.none,
+          enabledBorder: widget.useBorder
+              ? OutlineInputBorder(
+                  borderRadius: borderRadius,
+                  borderSide: borderSide,
+                )
+              : InputBorder.none,
+        ),
+      ),
+    );
+  }
+}
+
+class CustomTextEditingController extends TextEditingController {
+  CustomTextEditingController({this.validator});
+
+  bool Function(String?)? validator;
+
+  bool isValid() {
+    if (validator == null) {
+      return true;
+    }
+    return validator!(text.trim());
+  }
+}
+
+class DotUnderlineInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isNotEmpty &&
+        (newValue.text[0] == '_' || newValue.text[0] == '.')) {
+      // Prevent input if the first character is _ or .
+      return oldValue;
+    }
+    return newValue;
+  }
+}

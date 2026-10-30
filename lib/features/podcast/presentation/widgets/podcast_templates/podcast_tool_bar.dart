@@ -1,0 +1,113 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:sound_center/features/podcast/presentation/bloc/podcast_bloc.dart';
+import 'package:sound_center/features/podcast/presentation/pages/downloaded_episodes.dart';
+import 'package:sound_center/features/podcast/presentation/pages/podcast.dart';
+import 'package:sound_center/features/podcast/presentation/widgets/podcast_templates/rss_feed_dialog.dart';
+import 'package:sound_center/generated/l10n.dart';
+import 'package:sound_center/shared/widgets/text_field_box.dart';
+
+class PodcastToolBar extends StatefulWidget {
+  const PodcastToolBar({super.key});
+
+  @override
+  State<PodcastToolBar> createState() => _PodcastToolBarState();
+}
+
+class _PodcastToolBarState extends State<PodcastToolBar> {
+  bool _showSearch = false;
+  final _controller = TextEditingController();
+  late ValueNotifier searchNotifier;
+
+  @override
+  void initState() {
+    super.initState();
+    searchNotifier = PodcastSearchController.showSearchField;
+    searchNotifier.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    if (_showSearch) {
+      _controller.clear();
+
+      setState(() {
+        _showSearch = searchNotifier.value;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    searchNotifier.removeListener(_onSearchChanged);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double height = MediaQuery.heightOf(context) / 100;
+    final orientation = MediaQuery.orientationOf(context);
+    if (orientation == .landscape) {
+      height = MediaQuery.heightOf(context) / 50;
+    }
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 300),
+      height: _showSearch ? height * 9 : height * 7,
+      child: Row(
+        children: [
+          IconButton(
+            icon: Icon(_showSearch ? Icons.close : Icons.search_rounded),
+            onPressed: _toggleSearch,
+          ),
+          if (_showSearch)
+            Expanded(
+              child: TextFieldBox(
+                controller: _controller,
+                textInputAction: TextInputAction.search,
+                maxLines: 1,
+                hintText: S.of(context).searchHint,
+                autofocus: true,
+                onChanged: (text) {
+                  if (text.trim().isEmpty) {
+                    BlocProvider.of<PodcastBloc>(
+                      context,
+                    ).add(GetSubscribedPodcasts());
+                  }
+                },
+                onSubmitted: (text) {
+                  BlocProvider.of<PodcastBloc>(
+                    context,
+                  ).add(SearchPodcast(text.trim()));
+                },
+              ),
+            ),
+          if (!_showSearch) const Spacer(),
+          IconButton(
+            onPressed: () {
+              showDialog(context: context, builder: (_) => RssFeedDialog());
+            },
+            icon: Icon(Icons.rss_feed_rounded),
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => DownloadedEpisodes()),
+              );
+            },
+            icon: Icon(Icons.download_rounded),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _toggleSearch() {
+    setState(() => _showSearch = !_showSearch);
+    PodcastSearchController.showSearchField.value = _showSearch;
+    if (!_showSearch) {
+      _controller.clear();
+      BlocProvider.of<PodcastBloc>(context).add(GetSubscribedPodcasts());
+    }
+  }
+}
