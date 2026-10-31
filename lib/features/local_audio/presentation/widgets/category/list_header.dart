@@ -8,6 +8,7 @@ import 'package:sound_center/features/local_audio/domain/repositories/audio_repo
 import 'package:sound_center/features/local_audio/presentation/bloc/local_bloc.dart';
 import 'package:sound_center/generated/l10n.dart';
 import 'package:sound_center/shared/Repository/player_repository.dart';
+import 'package:sound_center/shared/widgets/glass.dart';
 import 'package:sound_center/shared/widgets/scrolling_text.dart';
 
 class ListHeader extends StatelessWidget {
@@ -59,86 +60,64 @@ class ListHeader extends StatelessWidget {
       case Category.folders:
         icon = Icons.folder_rounded;
         break;
-      default:
+      case Category.favorites:
+        icon = Icons.favorite_rounded;
+        break;
+      case Category.allSongs:
         icon = Icons.music_note_rounded;
+        break;
     }
 
-    // Scale down everything when the available height is tight (landscape).
-    final double avatarSize = isLandscape ? 40 : 50;
-    final double iconSize = isLandscape ? 22 : 30;
-    final double verticalPadding = isLandscape ? 10 : 20;
-    final double bottomPadding = isLandscape ? 12 : 24;
-
+    final avatarSize = isLandscape ? 40.0 : 64.0;
     final avatar = Container(
       width: avatarSize,
       height: avatarSize,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(isLandscape ? 14 : 18),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [cs.primary, cs.tertiary],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: cs.primary.withValues(alpha: 0.35),
-            blurRadius: isLandscape ? 10 : 16,
-            offset: Offset(0, isLandscape ? 3 : 6),
-          ),
-        ],
+        color: cs.primaryContainer,
+        borderRadius: BorderRadius.circular(isLandscape ? 12 : 18),
       ),
-      child: Hero(
-        tag: title,
-        child: Icon(icon, color: cs.onPrimary, size: iconSize),
-      ),
+      child: Icon(icon, size: isLandscape ? 22 : 32, color: cs.primary),
     );
 
     final titleBlock = Expanded(
       child: Column(
-        spacing: isLandscape ? 2 : 4,
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            spacing: 5,
             children: [
-              Flexible(
+              Expanded(
                 child: ScrollingText(
-                  key: ValueKey(title),
                   title,
-                  style: (isLandscape ? tt.titleMedium : tt.titleLarge)
+                  style: (isLandscape ? tt.titleMedium : tt.headlineSmall)
                       ?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: cs.onPrimaryContainer,
+                        fontWeight: FontWeight.bold,
+                        color: cs.onSurface,
                       ),
                 ),
               ),
               if (category == Category.playlists)
                 IconButton(
+                  visualDensity: VisualDensity.compact,
                   onPressed: () => playlistRename?.call(),
-                  iconSize: 18,
-                  visualDensity: isLandscape
-                      ? VisualDensity.compact
-                      : VisualDensity.standard,
-                  padding: isLandscape ? EdgeInsets.zero : null,
-                  constraints: isLandscape
-                      ? const BoxConstraints(minWidth: 28, minHeight: 28)
-                      : null,
-                  icon: Icon(Icons.edit_rounded, color: cs.onPrimaryContainer),
+                  icon: Icon(Icons.edit_rounded, size: isLandscape ? 18 : 20),
                 ),
             ],
           ),
-          if (!isLandscape)
-            Text(
-              '${S.of(context).tracks} : ${audios.length}',
-              style: tt.bodyMedium?.copyWith(
-                color: cs.onPrimaryContainer.withValues(alpha: 0.75),
-              ),
+          if (!isLandscape) const SizedBox(height: 4),
+          Text(
+            "${audios.length} ${S.of(context).tracks}",
+            style: tt.bodyMedium?.copyWith(
+              color: cs.onSurfaceVariant.withValues(alpha: 0.75),
+              fontWeight: FontWeight.w500,
             ),
+          ),
         ],
       ),
     );
+
+    final verticalPadding = isLandscape ? 6.0 : 8.0;
+    final bottomPadding = isLandscape ? 8.0 : 16.0;
 
     final playButton = FilledButton.icon(
       onPressed: audios.isEmpty
@@ -162,59 +141,41 @@ class ListHeader extends StatelessWidget {
       ),
     );
 
-    return Container(
-      padding: EdgeInsets.fromLTRB(20, verticalPadding, 20, bottomPadding),
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(28),
-          bottomRight: Radius.circular(28),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: cs.primary.withValues(alpha: 0.35),
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          ),
-        ],
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Theme.of(context).appBarTheme.backgroundColor!,
-            Theme.of(
-              context,
-            ).appBarTheme.backgroundColor!.withValues(alpha: 0.6),
-          ],
-        ),
-      ),
-      // In landscape everything sits in ONE row (avatar, title, buttons)
-      // so the header only ever costs one row of height instead of two
-      // stacked blocks (info row + button row).
-      child: isLandscape
-          ? Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              spacing: 12,
-              children: [
-                avatar,
-                titleBlock,
-                SizedBox(width: 110, child: playButton),
-                SizedBox(width: 150, child: shuffleButton),
-              ],
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 18,
-              children: [
-                Row(spacing: 15, children: [avatar, titleBlock]),
-                Row(
-                  spacing: 10,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+      child: Glass(
+        borderRadius: 24,
+        elevation: 4,
+        useBorder: true,
+        child: Container(
+          padding: EdgeInsets.fromLTRB(20, verticalPadding, 20, bottomPadding),
+          child: isLandscape
+              ? Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  spacing: 12,
                   children: [
-                    Expanded(child: playButton),
-                    Expanded(child: shuffleButton),
+                    avatar,
+                    titleBlock,
+                    SizedBox(width: 110, child: playButton),
+                    SizedBox(width: 150, child: shuffleButton),
+                  ],
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 18,
+                  children: [
+                    Row(spacing: 15, children: [avatar, titleBlock]),
+                    Row(
+                      spacing: 10,
+                      children: [
+                        Expanded(child: playButton),
+                        Expanded(child: shuffleButton),
+                      ],
+                    ),
                   ],
                 ),
-              ],
-            ),
+        ),
+      ),
     );
   }
 }

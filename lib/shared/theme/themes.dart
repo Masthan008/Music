@@ -277,14 +277,14 @@ AppThemeData _buildLightTheme() {
   return _buildTheme(
     id: 'light',
     brightness: Brightness.light,
-    scaffoldBackground: Colors.grey.shade200,
-    thumbColor: const Color(0xff183054),
-    appBarBackground: const Color(0xfff5ffd6),
-    appBarShadowColor: const Color(0xFF601410),
-    mediaColor: const Color(0xfff1f8dc),
-    iconColor: Colors.black,
-    blur: 12,
-    opacity: 0.1,
+    scaffoldBackground: const Color(0xFFF6F8FA),
+    thumbColor: const Color(0xFF2563EB),
+    appBarBackground: const Color(0xFFFFFFFF),
+    appBarShadowColor: const Color(0x14000000),
+    mediaColor: const Color(0xFFFFFFFF),
+    iconColor: const Color(0xFF1E293B),
+    blur: 16,
+    opacity: 0.35,
   );
 }
 

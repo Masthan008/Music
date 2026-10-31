@@ -41,7 +41,7 @@ class _PlaylistListTemplateState extends State<PlaylistListTemplate> {
           child: ListView.builder(
             itemCount: widget.playlists.length,
             controller: _scrollController,
-            itemExtent: LIST_ITEM_HEIGHT,
+            itemExtent: LIST_ITEM_HEIGHT + 8,
             padding: const EdgeInsets.only(bottom: 120),
             itemBuilder: (context, index) {
               final playlist = widget.playlists[index];

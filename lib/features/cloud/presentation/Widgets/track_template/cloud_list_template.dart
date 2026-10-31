@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:soundcloud_explode_dart/soundcloud_explode_dart.dart';
 import 'package:sound_center/core/constants/constants.dart';
 import 'package:sound_center/features/cloud/data/repository/cloud_player_rpository_imp.dart';
 import 'package:sound_center/features/cloud/domain/entity/cloud_entity.dart';
@@ -10,7 +11,6 @@ import 'package:sound_center/features/cloud/presentation/pages/playlist_info/pla
 import 'package:sound_center/generated/l10n.dart';
 import 'package:sound_center/shared/theme/themes.dart';
 import 'package:sound_center/shared/widgets/network_image.dart';
-import 'package:sound_center/shared/widgets/text_view.dart';
 
 class CloudListTemplate extends StatelessWidget {
   const CloudListTemplate(this.items, {super.key});
@@ -30,7 +30,74 @@ class CloudListTemplate extends StatelessWidget {
   Widget build(BuildContext context) {
     final playerRepo = CloudPlayerRepositoryImp();
     if (items.playlists.isEmpty && items.tracks.isEmpty) {
-      return Center(child: TextView(S.of(context).noHistory));
+      final genres = [
+        'Trending',
+        'Top 50 Pop',
+        'Bollywood Hits',
+        'Lo-Fi Beats',
+        'Electronic',
+        'Hip-Hop',
+        'Acoustic',
+        'Devotional',
+      ];
+      final bloc = BlocProvider.of<CloudBloc>(context);
+      return Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.cloud_queue_rounded,
+                size: 64,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Discover Music on SoundCloud',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Tap a genre to search and stream tracks instantly',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                alignment: WrapAlignment.center,
+                children: genres.map((genre) {
+                  return ActionChip(
+                    avatar: Icon(
+                      Icons.music_note_rounded,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    label: Text(genre),
+                    onPressed: () {
+                      bloc.add(
+                        SearchCloud(
+                          queryText: genre,
+                          filter: SearchFilter.none,
+                        ),
+                      );
+                    },
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        ),
+      );
     }
     final currentAudio = playerRepo.getCurrentTrack;
     final bool hasTracks = items.tracks.isNotEmpty;

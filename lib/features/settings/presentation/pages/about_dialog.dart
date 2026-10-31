@@ -12,7 +12,6 @@ import 'package:sound_center/features/settings/presentation/pages/update_dialog.
 import 'package:sound_center/generated/l10n.dart';
 import 'package:sound_center/shared/theme/themes.dart';
 import 'package:sound_center/shared/widgets/toast_message.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AboutDialogBody extends StatelessWidget {
   const AboutDialogBody({super.key});
@@ -20,17 +19,8 @@ class AboutDialogBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: .min,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        TextButton(
-          onPressed: () async {
-            final Uri url = Uri.parse(
-              "https://github.com/Azare77/sound_center",
-            );
-            launchUrl(url, mode: LaunchMode.externalApplication);
-          },
-          child: Text(S.of(context).sourceCode),
-        ),
         TextButton(
           onPressed: () => _checkForUpdate(context),
           child: Text(S.of(context).checkForUpdates),
@@ -42,7 +32,7 @@ class AboutDialogBody extends StatelessWidget {
   Future<void> _checkForUpdate(BuildContext context) async {
     try {
       final res = await http.get(
-        Uri.parse('https://api.github.com/repos/azare77/sound_center/releases'),
+        Uri.parse('https://api.github.com/repos/Masthan008/Music/releases'),
       );
 
       if (res.statusCode != 200) return;

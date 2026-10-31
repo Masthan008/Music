@@ -6,6 +6,12 @@ class RadioBrowser {
   static final Map<String, Station> _stationCache = {};
   static final Map<String, DateTime> _cachedTime = {};
 
+  static const List<String> _fallbackHosts = [
+    'de1.api.radio-browser.info',
+    'nl1.api.radio-browser.info',
+    'at1.api.radio-browser.info',
+  ];
+
   factory RadioBrowser() {
     return _instance;
   }
@@ -32,12 +38,22 @@ class RadioBrowser {
 
   Future<void> _init() async {
     try {
-      _api = await RadioBrowserApi.discoverHost(userAgent: 'SoundCenter/1.0.0');
+      _api = await RadioBrowserApi.discoverHost(userAgent: 'SoundCenter/2.0.0');
+      if (_api != null) return;
     } catch (_) {
       _api = null;
-    } finally {
-      _initializing = null;
     }
+
+    // Fallback to direct trusted hosts if discovery failed (e.g. DNS block in India)
+    for (final host in _fallbackHosts) {
+      try {
+        _api = RadioBrowserApi.fromHost(host);
+        break;
+      } catch (_) {
+        continue;
+      }
+    }
+    _initializing = null;
   }
 
   Future<RadioBrowserListResponse<Station>?> search({
@@ -49,6 +65,7 @@ class RadioBrowser {
   }) async {
     try {
       await ensureInitialized();
+      if (_api == null) return null;
 
       final res = await _api!.advancedStationSearch(
         countryCode: countryCode,
@@ -70,6 +87,7 @@ class RadioBrowser {
   Future<List<Country>?> getCountries() async {
     try {
       await ensureInitialized();
+      if (_api == null) return null;
 
       final countries = await _api!.getCountries();
       return countries.items;
@@ -81,6 +99,7 @@ class RadioBrowser {
   Future<List<Language>?> getLanguages() async {
     try {
       await ensureInitialized();
+      if (_api == null) return null;
 
       final languages = await _api!.getLanguages();
       return languages.items;
@@ -92,6 +111,7 @@ class RadioBrowser {
   Future<List<Tag>?> getTags() async {
     try {
       await ensureInitialized();
+      if (_api == null) return null;
 
       final tags = await _api!.getTags();
       return tags.items;
@@ -103,6 +123,7 @@ class RadioBrowser {
   Future<Station?> _getStation(String uuid) async {
     try {
       await ensureInitialized();
+      if (_api == null) return null;
 
       final stations = await _api!.getStationsByUUID(uuids: [uuid]);
       return stations.items.firstOrNull;

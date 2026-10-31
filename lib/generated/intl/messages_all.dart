@@ -1,8 +1,4 @@
 // DO NOT EDIT. This is code generated via package:intl/generate_localized.dart
-// This is a library that looks up messages for specific locales by
-// delegating to the appropriate library.
-
-// Ignore issues from commonly used lints in this file.
 // ignore_for_file:implementation_imports, file_names, unnecessary_new
 // ignore_for_file:unnecessary_brace_in_string_interps, directives_ordering
 // ignore_for_file:argument_type_not_assignable, invalid_assignment
@@ -18,11 +14,19 @@ import 'package:intl/src/intl_helpers.dart';
 
 import 'messages_en.dart' as messages_en;
 import 'messages_fa.dart' as messages_fa;
+import 'messages_hi.dart' as messages_hi;
+import 'messages_te.dart' as messages_te;
+import 'messages_ta.dart' as messages_ta;
+import 'messages_bn.dart' as messages_bn;
 
 typedef Future<dynamic> LibraryLoader();
 Map<String, LibraryLoader> _deferredLibraries = {
   'en': () => new SynchronousFuture(null),
   'fa': () => new SynchronousFuture(null),
+  'hi': () => new SynchronousFuture(null),
+  'te': () => new SynchronousFuture(null),
+  'ta': () => new SynchronousFuture(null),
+  'bn': () => new SynchronousFuture(null),
 };
 
 MessageLookupByLibrary? _findExact(String localeName) {
@@ -31,6 +35,14 @@ MessageLookupByLibrary? _findExact(String localeName) {
       return messages_en.messages;
     case 'fa':
       return messages_fa.messages;
+    case 'hi':
+      return messages_hi.messages;
+    case 'te':
+      return messages_te.messages;
+    case 'ta':
+      return messages_ta.messages;
+    case 'bn':
+      return messages_bn.messages;
     default:
       return null;
   }

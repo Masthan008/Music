@@ -6,7 +6,7 @@ class Glass extends StatelessWidget {
   const Glass({
     super.key,
     this.borderRadius = 0.0,
-    required this.color,
+    this.color,
     required this.child,
     this.blur,
     this.opacity,
@@ -17,7 +17,7 @@ class Glass extends StatelessWidget {
   });
 
   final double borderRadius;
-  final Color color;
+  final Color? color;
   final double? blur;
   final double? opacity;
   final double elevation;
@@ -30,6 +30,7 @@ class Glass extends StatelessWidget {
   Widget build(BuildContext context) {
     final finalOpacity = opacity ?? ThemeManager.current.opacity;
     final finalBlur = blur ?? ThemeManager.current.blur;
+    final baseColor = color ?? ThemeManager.current.mediaColor;
 
     final borderSide = useBorder
         ? BorderSide(
@@ -55,7 +56,7 @@ class Glass extends StatelessWidget {
               );
 
     final settings = LiquidGlassSettings(
-      glassColor: color.withValues(alpha: finalOpacity),
+      glassColor: baseColor.withValues(alpha: finalOpacity),
       blur: finalBlur > 0 ? finalBlur : 0.01,
       thickness: 25,
       fresnelStrength: useBorder ? 1.0 : 0.2,
@@ -68,24 +69,26 @@ class Glass extends StatelessWidget {
       quality: quality ?? GlassQuality.standard,
       shape: shape,
       settings: settings,
-      color: color.withValues(alpha: finalOpacity),
-      clipBehavior: Clip.antiAlias,
-      allowElevation: elevation > 0,
       child: child,
     );
 
     if (elevation > 0) {
-      container = DecoratedBox(
+      final shadowRadius = BorderRadius.only(
+        topLeft: Radius.circular(borderRadius),
+        topRight: Radius.circular(borderRadius),
+        bottomLeft: Radius.circular(onlyTopBorderRadius ? 0 : borderRadius),
+        bottomRight: Radius.circular(onlyTopBorderRadius ? 0 : borderRadius),
+      );
+
+      return DecoratedBox(
         decoration: BoxDecoration(
-          borderRadius: onlyTopBorderRadius
-              ? BorderRadius.vertical(top: Radius.circular(borderRadius))
-              : BorderRadius.circular(borderRadius),
+          borderRadius: shadowRadius,
           boxShadow: [
             BoxShadow(
-              offset: const Offset(0, 5),
-              blurRadius: elevation * 1.5,
-              spreadRadius: elevation * 0.5,
-              color: Colors.black.withValues(alpha: 0.35),
+              color: Colors.black.withValues(alpha: 0.18),
+              blurRadius: elevation * 2,
+              spreadRadius: 0,
+              offset: Offset(0, elevation / 2),
             ),
           ],
         ),

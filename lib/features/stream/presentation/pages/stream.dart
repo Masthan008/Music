@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:sound_center/features/stream/data/source/featured_stations.dart';
 import 'package:sound_center/features/stream/domain/entity/stream_sub_entity.dart';
 import 'package:sound_center/features/stream/presentation/bloc/stream_bloc.dart';
 import 'package:sound_center/features/stream/presentation/bloc/stream_status.dart';
@@ -10,7 +11,6 @@ import 'package:sound_center/features/stream/presentation/widgets/radio/stream_a
 import 'package:sound_center/features/stream/presentation/widgets/stream_template.dart';
 import 'package:sound_center/features/stream/presentation/widgets/stream_tool_bar.dart';
 import 'package:sound_center/generated/l10n.dart';
-import 'package:sound_center/shared/widgets/loading.dart';
 
 class StreamSearchController {
   static final ValueNotifier<bool> showSearchField = ValueNotifier(true);
@@ -57,21 +57,11 @@ class _StreamPageState extends State<StreamPage> {
   Completer<void>? refreshCompleter;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<StreamBloc>(context);
     return Column(
       children: [
-        StreamToolBar(),
+        const StreamToolBar(),
         Expanded(
           child: BlocBuilder<StreamBloc, StreamState>(
             buildWhen: (previous, current) {
@@ -83,9 +73,11 @@ class _StreamPageState extends State<StreamPage> {
             builder: (BuildContext context, StreamState state) {
               if (state.status is SubscribedStreams) {
                 SubscribedStreams status = state.status as SubscribedStreams;
-                if (status.streams.isEmpty) {
-                  return Center(child: Text(S.of(context).noStream));
-                }
+                final bool isFeatured = status.streams.isEmpty;
+                final displayStreams = isFeatured
+                    ? FeaturedStations.indianFeaturedStations
+                    : status.streams;
+
                 return RefreshIndicator(
                   onRefresh: () {
                     refreshCompleter = Completer<void>();
@@ -95,10 +87,38 @@ class _StreamPageState extends State<StreamPage> {
                     return refreshCompleter!.future;
                   },
                   child: ListView.builder(
-                    itemCount: status.streams.length,
+                    itemCount: displayStreams.length + (isFeatured ? 1 : 0),
                     padding: const EdgeInsets.only(bottom: 120),
                     itemBuilder: (context, index) {
-                      final stream = status.streams[index];
+                      if (isFeatured && index == 0) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 8.0,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.radio_rounded,
+                                size: 20,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Featured Radio Stations',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Theme.of(context).colorScheme.onSurface,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      final stream = isFeatured
+                          ? displayStreams[index - 1]
+                          : displayStreams[index];
                       return InkWell(
                         onTap: () async {
                           await Navigator.push(
@@ -139,6 +159,7 @@ class _StreamPageState extends State<StreamPage> {
                             builder: (_) => StreamDetail(stream: stream),
                           ),
                         );
+                        bloc.add(GetSubscribedStreams());
                       },
                       onLongPress: () {
                         showDialog(
@@ -151,10 +172,7 @@ class _StreamPageState extends State<StreamPage> {
                   },
                 );
               }
-              if (state.status is LoadingStream) {
-                return Loading();
-              }
-              return Center(child: Text(S.of(context).noStream));
+              return const SizedBox.shrink();
             },
           ),
         ),

@@ -1,14 +1,13 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:io';
 
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sound_center/features/local_audio/domain/entities/audio.dart';
 import 'package:sound_center/features/local_audio/presentation/bloc/local_bloc.dart';
 import 'package:sound_center/generated/l10n.dart';
 import 'package:sound_center/shared/widgets/confirm_dialog.dart';
+import 'package:sound_center/shared/widgets/glass.dart';
 
 class AudioActionMenu extends StatelessWidget {
   const AudioActionMenu({super.key, required this.audio});
@@ -18,12 +17,16 @@ class AudioActionMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      insetPadding: const EdgeInsets.all(18.0),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SingleChildScrollView(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      child: Glass(
+        borderRadius: 20,
+        elevation: 8,
+        useBorder: true,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
           child: Column(
-            spacing: 5,
+            mainAxisSize: MainAxisSize.min,
             children: [
               TextButton(
                 onPressed: () async {
@@ -33,23 +36,43 @@ class AudioActionMenu extends StatelessWidget {
                         builder: (_) => ConfirmDialog(),
                       ) ??
                       false;
-                  if (res) {
+                  if (res && context.mounted) {
                     BlocProvider.of<LocalBloc>(
                       context,
                     ).add(DeleteAudios([audio]));
                   }
-                  Navigator.pop(context);
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                  }
                 },
                 child: Text(S.of(context).delete),
               ),
               TextButton(
-                onPressed: () {
-                  if (!Platform.isLinux) {
-                    SharePlus.instance.share(
-                      ShareParams(files: [XFile(audio.path)]),
-                    );
-                  }
+                onPressed: () async {
                   Navigator.pop(context);
+                  if (!Platform.isLinux) {
+                    try {
+                      final file = File(audio.path);
+                      if (await file.exists()) {
+                        await SharePlus.instance.share(
+                          ShareParams(
+                            files: [XFile(audio.path, mimeType: 'audio/*')],
+                            subject: '${audio.title} - ${audio.artist}',
+                          ),
+                        );
+                      } else {
+                        await SharePlus.instance.share(
+                          ShareParams(text: '${audio.title} - ${audio.artist}'),
+                        );
+                      }
+                    } catch (_) {
+                      try {
+                        await SharePlus.instance.share(
+                          ShareParams(text: '${audio.title} - ${audio.artist}'),
+                        );
+                      } catch (_) {}
+                    }
+                  }
                 },
                 child: Text(S.of(context).share),
               ),
