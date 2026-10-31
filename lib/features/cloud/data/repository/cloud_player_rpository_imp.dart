@@ -20,8 +20,30 @@ class CloudPlayerRepositoryImp extends BasePlayerRepository {
     return _instance;
   }
 
+  DateTime? _lastErrorTime;
+  int _consecutiveErrors = 0;
+
+  Future<void> _onCloudCompleteHandler() async {
+    final now = DateTime.now();
+    if (_lastErrorTime != null &&
+        now.difference(_lastErrorTime!) < const Duration(seconds: 3)) {
+      _consecutiveErrors++;
+      if (_consecutiveErrors > 3) {
+        debugPrint(
+          'Too many consecutive cloud playback errors, stopping auto-advance',
+        );
+        await stop();
+        return;
+      }
+    } else {
+      _consecutiveErrors = 0;
+    }
+    _lastErrorTime = now;
+    await next();
+  }
+
   CloudPlayerRepositoryImp._internal() {
-    super.playerService.setOnCloudComplete(() => next());
+    super.playerService.setOnCloudComplete(_onCloudCompleteHandler);
     _initialPlayerState();
   }
 
@@ -237,10 +259,29 @@ class CloudPlayerRepositoryImp extends BasePlayerRepository {
         return null;
       }
 
-      final streamInfo = streams.firstWhere(
-        (s) => s.container.toLowerCase() == 'mp3',
-        orElse: () => streams.first,
+      // 1. Prefer progressive stream if available
+      final progressive = streams.where(
+        (s) => s.protocol.toLowerCase() == 'progressive',
       );
+      StreamInfo streamInfo;
+      if (progressive.isNotEmpty) {
+        streamInfo = progressive.first;
+      } else {
+        // 2. Select highest quality HLS stream
+        final hlsStreams = streams
+            .where((s) => s.protocol.toLowerCase() == 'hls')
+            .toList();
+        if (hlsStreams.isNotEmpty) {
+          streamInfo = hlsStreams.firstWhere(
+            (s) =>
+                s.quality == Quality.standardQuality ||
+                s.url.contains('aac_160k'),
+            orElse: () => hlsStreams.first,
+          );
+        } else {
+          streamInfo = streams.first;
+        }
+      }
 
       _urlCache[track.id] = streamInfo.url;
       _cachedTime[track.id] = DateTime.now();
@@ -249,6 +290,14 @@ class CloudPlayerRepositoryImp extends BasePlayerRepository {
       debugPrint('getTrackUrl failed: $e\n$st');
       return null;
     }
+  }
+
+  @override
+  Future<int> getDuration() async {
+    if (_currentTrack != null && _currentTrack!.duration > 0) {
+      return _currentTrack!.duration;
+    }
+    return super.getDuration();
   }
 
   @override

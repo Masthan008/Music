@@ -110,5 +110,77 @@ class FeaturedPodcasts {
           artworkUrl:
               'https://ichef.bbci.co.uk/images/ic/1024x1024/p02nq0gn.jpg',
         ),
+        SubscriptionEntity(
+          title: 'Huberman Lab',
+          feedUrl: 'https://feeds.megaphone.fm/hubermanlab',
+          subscribedAt: DateTime(2025, 1, 1),
+          lastListenAt: DateTime(2025, 1, 1),
+          updateTime: DateTime(2025, 1, 1),
+          totalEpisodes: 210,
+          haveNewEpisode: false,
+          author: 'Scicomm Media',
+          artworkUrl:
+              'https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/3d/bf/97/3dbf970e-be4c-719d-7206-8d63309a6565/mza_17208332152862369658.jpg/600x600bb.jpg',
+        ),
+        SubscriptionEntity(
+          title: 'Naval',
+          feedUrl: 'https://feeds.simplecast.com/lZq14r4v',
+          subscribedAt: DateTime(2025, 1, 1),
+          lastListenAt: DateTime(2025, 1, 1),
+          updateTime: DateTime(2025, 1, 1),
+          totalEpisodes: 60,
+          haveNewEpisode: false,
+          author: 'Naval Ravikant',
+          artworkUrl:
+              'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/05/aa/9c/05aa9c60-c44a-f2b1-59c3-eaee5ca34676/mza_10330919192461937963.jpg/600x600bb.jpg',
+        ),
+        SubscriptionEntity(
+          title: 'The Seen and the Unseen',
+          feedUrl: 'https://seenunseen.in/feed/podcast',
+          subscribedAt: DateTime(2025, 1, 1),
+          lastListenAt: DateTime(2025, 1, 1),
+          updateTime: DateTime(2025, 1, 1),
+          totalEpisodes: 380,
+          haveNewEpisode: false,
+          author: 'Amit Varma',
+          artworkUrl:
+              'https://is1-ssl.mzstatic.com/image/thumb/Podcasts126/v4/4a/01/be/4a01be5e-ae0c-5544-7688-6627581b0a70/mza_4478335805565502931.jpg/600x600bb.jpg',
+        ),
+        SubscriptionEntity(
+          title: 'Bhagavad Gita for Everyday Living',
+          feedUrl: 'https://anchor.fm/s/b841e28/podcast/rss',
+          subscribedAt: DateTime(2025, 1, 1),
+          lastListenAt: DateTime(2025, 1, 1),
+          updateTime: DateTime(2025, 1, 1),
+          totalEpisodes: 240,
+          haveNewEpisode: false,
+          author: 'Neil Bhatt',
+          artworkUrl:
+              'https://is1-ssl.mzstatic.com/image/thumb/Podcasts113/v4/f4/bc/9f/f4bc9fd6-0792-749e-1311-53e7751969a6/mza_16698991751480068564.jpg/600x600bb.jpg',
+        ),
+        SubscriptionEntity(
+          title: 'Stuff You Should Know',
+          feedUrl: 'https://feeds.megaphone.fm/stuffyoushouldknow',
+          subscribedAt: DateTime(2025, 1, 1),
+          lastListenAt: DateTime(2025, 1, 1),
+          updateTime: DateTime(2025, 1, 1),
+          totalEpisodes: 1900,
+          haveNewEpisode: false,
+          author: 'iHeartPodcasts',
+          artworkUrl:
+              'https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/55/26/50/5526500e-2a9d-5eb2-4328-9d41dcfbe5b8/mza_16480587285640702677.jpg/600x600bb.jpg',
+        ),
+        SubscriptionEntity(
+          title: 'Cyrus Says',
+          feedUrl: 'https://feed.podbean.com/cyrussays/feed.xml',
+          subscribedAt: DateTime(2025, 1, 1),
+          lastListenAt: DateTime(2025, 1, 1),
+          updateTime: DateTime(2025, 1, 1),
+          totalEpisodes: 1200,
+          haveNewEpisode: false,
+          author: 'IVM Podcasts',
+          artworkUrl:
+              'https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/df/31/54/df31542f-d205-fe0e-3fa8-1f19f18ae871/mza_16235472856333678121.jpg/600x600bb.jpg',
+        ),
       ];
 }

@@ -51,7 +51,10 @@ class _TracksState extends State<Tracks> {
                 context,
               ).add(PlayTrack(tracks: widget.tracks, index: index));
             },
-            child: CloudItemTemplate(item: track),
+            child: CloudItemTemplate(
+              item: track,
+              isPlaying: isCurrent,
+            ),
           ),
         );
       }, childCount: widget.tracks.length),

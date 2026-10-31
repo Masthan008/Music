@@ -39,7 +39,6 @@ class _ThemeDesignerState extends State<ThemeDesigner> {
         final name = text?.trim() ?? "";
         return ThemeManager.getTheme(name) == null &&
             name.isNotEmpty &&
-            name != 'green' &&
             name != 'dark' &&
             name != 'light';
       },
@@ -126,7 +125,6 @@ class _ThemeDesignerState extends State<ThemeDesigner> {
                         final name = text?.trim() ?? "";
                         return name == widget.themeName ||
                             (ThemeManager.getTheme(name) == null &&
-                                name != 'green' &&
                                 name != 'dark' &&
                                 name != 'light');
                       },

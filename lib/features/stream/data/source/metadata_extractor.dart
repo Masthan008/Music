@@ -16,7 +16,7 @@ class MetadataExtractor {
     } else if (lowerUrl.endsWith('.ogg') || lowerUrl.endsWith('.opus')) {
       return await _readOggMetadataFromUrl(url); // تابع جدید بالا
     } else {
-      debugPrint('❌ فرمت فایل پشتیبانی نمی‌شود: $url');
+      debugPrint('[Error] فرمت فایل پشتیبانی نمی‌شود: $url');
       return null;
     }
   }
@@ -80,7 +80,7 @@ class MetadataExtractor {
 
       final audioBytes = metadataResponse.bodyBytes;
       debugPrint(
-        '✅ دانلود واقعی برای متادیتا: ${audioBytes.length} بایت',
+        '[Success] دانلود واقعی برای متادیتا: ${audioBytes.length} بایت',
       ); // باید خیلی کمتر از کل فایل باشه
 
       // مرحله ۳: نوشتن در فایل موقتی و خواندن متادیتا
@@ -125,14 +125,14 @@ class MetadataExtractor {
 
       if (response.statusCode != 206) {
         debugPrint(
-          '❌ Range Request برای FLAC کار نکرد (Status: ${response.statusCode})',
+          '[Error] Range Request برای FLAC کار نکرد (Status: ${response.statusCode})',
         );
         return null;
       }
 
       final bytes = response.bodyBytes;
       debugPrint(
-        '✅ دانلود برای FLAC: ${bytes.length} بایت (${(bytes.length / 1024).toStringAsFixed(1)} KB)',
+        '[Success] دانلود برای FLAC: ${bytes.length} بایت (${(bytes.length / 1024).toStringAsFixed(1)} KB)',
       );
 
       // چک اولیه که واقعاً FLAC باشه
@@ -142,7 +142,7 @@ class MetadataExtractor {
           bytes[2] != 0x61 ||
           bytes[3] != 0x43) {
         // "fLaC"
-        debugPrint('❌ این فایل FLAC نیست');
+        debugPrint('[Error] این فایل FLAC نیست');
         return null;
       }
 
@@ -155,7 +155,7 @@ class MetadataExtractor {
 
       await tempFile.delete();
 
-      debugPrint('\n✅ متادیتای FLAC خوانده شد:');
+      debugPrint('\n[Success] متادیتای FLAC خوانده شد:');
       debugPrint('عنوان     : ${metadata.title ?? "نامشخص"}');
       debugPrint('آرتیست    : ${metadata.artist ?? "نامشخص"}');
       debugPrint('آلبوم     : ${metadata.album ?? "نامشخص"}');
@@ -186,14 +186,14 @@ class MetadataExtractor {
 
       if (response.statusCode != 206) {
         debugPrint(
-          '❌ Range Request برای OGG کار نکرد (Status: ${response.statusCode})',
+          '[Error] Range Request برای OGG کار نکرد (Status: ${response.statusCode})',
         );
         return null;
       }
 
       final bytes = response.bodyBytes;
       debugPrint(
-        '✅ دانلود برای OGG: ${bytes.length} بایت (${(bytes.length / 1024).toStringAsFixed(1)} KB)',
+        '[Success] دانلود برای OGG: ${bytes.length} بایت (${(bytes.length / 1024).toStringAsFixed(1)} KB)',
       );
 
       // چک اولیه که فایل OGG باشه
@@ -203,7 +203,7 @@ class MetadataExtractor {
           bytes[2] != 0x67 ||
           bytes[3] != 0x53) {
         // "OggS"
-        debugPrint('❌ این فایل OGG نیست');
+        debugPrint('[Error] این فایل OGG نیست');
         return null;
       }
 
@@ -218,7 +218,7 @@ class MetadataExtractor {
 
       await tempFile.delete();
 
-      debugPrint('\n✅ متادیتای OGG با موفقیت خوانده شد:');
+      debugPrint('\n[Success] متادیتای OGG با موفقیت خوانده شد:');
       debugPrint('عنوان     : ${metadata.title ?? "نامشخص"}');
       debugPrint('آرتیست    : ${metadata.artist ?? "نامشخص"}');
       debugPrint('آلبوم     : ${metadata.album ?? "نامشخص"}');
@@ -228,7 +228,7 @@ class MetadataExtractor {
 
       return metadata;
     } catch (e) {
-      debugPrint('❌ خطا در خواندن متادیتای OGG: $e');
+      debugPrint('[Error] خطا در خواندن متادیتای OGG: $e');
       return null;
     }
   }

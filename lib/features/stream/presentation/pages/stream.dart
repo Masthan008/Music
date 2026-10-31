@@ -11,6 +11,7 @@ import 'package:sound_center/features/stream/presentation/widgets/radio/stream_a
 import 'package:sound_center/features/stream/presentation/widgets/stream_template.dart';
 import 'package:sound_center/features/stream/presentation/widgets/stream_tool_bar.dart';
 import 'package:sound_center/generated/l10n.dart';
+import 'package:sound_center/shared/widgets/glass_pill.dart';
 
 class StreamSearchController {
   static final ValueNotifier<bool> showSearchField = ValueNotifier(true);
@@ -55,13 +56,99 @@ class StreamPage extends StatefulWidget {
 
 class _StreamPageState extends State<StreamPage> {
   Completer<void>? refreshCompleter;
+  String _selectedCategory = 'All';
+
+  static const List<Map<String, dynamic>> _streamCategories = [
+    {
+      'id': 'All',
+      'label': 'Featured',
+      'icon': Icons.radio_rounded,
+    },
+    {
+      'id': 'Hindi',
+      'label': 'हिन्दी (Hindi)',
+      'icon': Icons.language_rounded,
+      'lang': 'hindi',
+    },
+    {
+      'id': 'Telugu',
+      'label': 'తెలుగు (Telugu)',
+      'icon': Icons.movie_filter_rounded,
+      'lang': 'telugu',
+    },
+    {
+      'id': 'Tamil',
+      'label': 'தமிழ் (Tamil)',
+      'icon': Icons.music_note_rounded,
+      'lang': 'tamil',
+    },
+    {
+      'id': 'Urdu',
+      'label': 'اردو (Urdu)',
+      'icon': Icons.mic_external_on_rounded,
+      'lang': 'urdu',
+    },
+    {
+      'id': 'News',
+      'label': 'News',
+      'icon': Icons.newspaper_rounded,
+      'tag': 'news',
+    },
+    {
+      'id': 'Classical',
+      'label': 'Classical',
+      'icon': Icons.library_music_rounded,
+      'tag': 'classical',
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<StreamBloc>(context);
+    final categoryItems = _streamCategories
+        .map(
+          (c) => GlassPillItem(
+            id: c['id'] as String,
+            label: c['label'] as String,
+            icon: c['icon'] as IconData,
+          ),
+        )
+        .toList();
+
     return Column(
       children: [
         const StreamToolBar(),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: GlassPillBar(
+            height: 38,
+            items: categoryItems,
+            selectedId: _selectedCategory,
+            onSelected: (id) {
+              setState(() => _selectedCategory = id);
+              if (id == 'All') {
+                bloc.add(GetSubscribedStreams());
+              } else {
+                final cat = _streamCategories.firstWhere((c) => c['id'] == id);
+                if (cat.containsKey('lang')) {
+                  bloc.add(
+                    SearchStream(
+                      offset: 0,
+                      language: cat['lang'] as String,
+                    ),
+                  );
+                } else if (cat.containsKey('tag')) {
+                  bloc.add(
+                    SearchStream(
+                      offset: 0,
+                      tag: cat['tag'] as String,
+                    ),
+                  );
+                }
+              }
+            },
+          ),
+        ),
         Expanded(
           child: BlocBuilder<StreamBloc, StreamState>(
             buildWhen: (previous, current) {

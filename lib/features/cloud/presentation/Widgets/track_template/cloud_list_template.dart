@@ -10,6 +10,7 @@ import 'package:sound_center/features/cloud/presentation/bloc/cloud_bloc.dart';
 import 'package:sound_center/features/cloud/presentation/pages/playlist_info/playlist_detail.dart';
 import 'package:sound_center/generated/l10n.dart';
 import 'package:sound_center/shared/theme/themes.dart';
+import 'package:sound_center/shared/widgets/glass.dart';
 import 'package:sound_center/shared/widgets/network_image.dart';
 
 class CloudListTemplate extends StatelessWidget {
@@ -33,24 +34,69 @@ class CloudListTemplate extends StatelessWidget {
       final bloc = BlocProvider.of<CloudBloc>(context);
       final categories = [
         {
-          'title': '🇮🇳 Hindi (हिन्दी)',
-          'queries': ['Bollywood Hits', 'Hindi Romantic', 'Arijit Singh Hits', 'Hindi Lo-Fi'],
+          'title': 'Hindi (हिन्दी)',
+          'icon': Icons.language_rounded,
+          'queries': [
+            'Bollywood Hits',
+            'Hindi Romantic',
+            'Arijit Singh Hits',
+            'Hindi Lo-Fi',
+            'Bollywood Retro',
+          ],
         },
         {
-          'title': '🎬 Telugu (తెలుగు)',
-          'queries': ['Telugu Hits', 'Tollywood Top 50', 'Telugu Melodies', 'Sid Sriram Telugu'],
+          'title': 'Telugu (తెలుగు)',
+          'icon': Icons.movie_filter_rounded,
+          'queries': [
+            'Telugu Hits',
+            'Tollywood Top 50',
+            'Telugu Melodies',
+            'Sid Sriram Telugu',
+            'Anirudh Telugu',
+          ],
         },
         {
-          'title': '🎵 Tamil (தமிழ்)',
-          'queries': ['Tamil Hits', 'Kollywood Chartbusters', 'Anirudh Tamil', 'Tamil Melodies'],
+          'title': 'Tamil (தமிழ்)',
+          'icon': Icons.music_note_rounded,
+          'queries': [
+            'Tamil Hits',
+            'Kollywood Chartbusters',
+            'Anirudh Tamil',
+            'Tamil Melodies',
+            'AR Rahman Tamil',
+          ],
         },
         {
-          'title': '🎙️ Urdu (اردو)',
-          'queries': ['Urdu Ghazals', 'Coke Studio Urdu', 'Rahat Fateh Ali', 'Urdu Melodies'],
+          'title': 'Urdu (اردو)',
+          'icon': Icons.mic_external_on_rounded,
+          'queries': [
+            'Urdu Ghazals',
+            'Coke Studio Urdu',
+            'Rahat Fateh Ali',
+            'Urdu Melodies',
+            'Atif Aslam',
+          ],
         },
         {
-          'title': '🌍 English Hits',
-          'queries': ['English Top 50', 'Global Pop', 'English Acoustic', 'Billboard Hot 100'],
+          'title': 'Punjabi (ਪੰਜਾਬੀ)',
+          'icon': Icons.queue_music_rounded,
+          'queries': [
+            'Punjabi Hits',
+            'AP Dhillon',
+            'Diljit Dosanjh',
+            'Sidhu Moose Wala',
+          ],
+        },
+        {
+          'title': 'English Top Hits',
+          'icon': Icons.public_rounded,
+          'queries': [
+            'English Top 50',
+            'Global Pop',
+            'English Acoustic',
+            'Billboard Hot 100',
+            'Chill Lo-Fi',
+          ],
         },
       ];
 
@@ -78,7 +124,7 @@ class CloudListTemplate extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Select any language or category to stream instantly',
+                    'Select any category or genre to stream instantly',
                     style: TextStyle(
                       fontSize: 12,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -87,37 +133,39 @@ class CloudListTemplate extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 20),
             ...categories.map((cat) {
               return Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
+                padding: const EdgeInsets.only(bottom: 20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      cat['title'] as String,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
+                    Row(
+                      children: [
+                        Icon(
+                          cat['icon'] as IconData,
+                          size: 18,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          cat['title'] as String,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: (cat['queries'] as List<String>).map((query) {
-                        return ActionChip(
-                          avatar: Icon(
-                            Icons.play_circle_outline_rounded,
-                            size: 16,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                          label: Text(
-                            query,
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                          onPressed: () {
+                        return InkWell(
+                          borderRadius: BorderRadius.circular(20),
+                          onTap: () {
                             bloc.add(
                               SearchCloud(
                                 queryText: query,
@@ -125,6 +173,37 @@ class CloudListTemplate extends StatelessWidget {
                               ),
                             );
                           },
+                          child: Glass(
+                            borderRadius: 20,
+                            blur: 10,
+                            opacity: 0.18,
+                            useBorder: true,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 7,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                spacing: 6,
+                                children: [
+                                  Icon(
+                                    Icons.play_circle_fill_rounded,
+                                    size: 15,
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                                  Text(
+                                    query,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: Theme.of(context).colorScheme.onSurface,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         );
                       }).toList(),
                     ),
@@ -240,7 +319,10 @@ class CloudListTemplate extends StatelessWidget {
                         builder: (_) => CloudActionMenu(track: item),
                       );
                     },
-                    child: CloudItemTemplate(item: item),
+                    child: CloudItemTemplate(
+                      item: item,
+                      isPlaying: isCurrent,
+                    ),
                   ),
                 );
               }, childCount: items.tracks.length),

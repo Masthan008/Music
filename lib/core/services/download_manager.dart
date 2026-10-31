@@ -238,7 +238,7 @@ class DownloadManager {
         final destDir = Directory('${musicDir.path}/soundCenter');
         await destDir.create(recursive: true);
 
-        // 🔄 Find a unique filename on Desktop by auto-incrementing
+        // Find a unique filename on Desktop by auto-incrementing
         int counter = 1;
         String uniquePath = '${destDir.path}/$key.m4a';
         while (await File(uniquePath).exists()) {
@@ -250,7 +250,7 @@ class DownloadManager {
         await file.copy(targetFile.path);
         newFilePath = targetFile.path;
       } else {
-        // 🔄 Prepare a unique local temporary file name before moving to Scoped Storage on Mobile
+        // Prepare a unique local temporary file name before moving to Scoped Storage on Mobile
         int counter = 1;
         String uniqueTempPath = file.path;
 

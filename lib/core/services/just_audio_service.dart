@@ -217,30 +217,22 @@ class JustAudioService {
           break;
 
         case AudioSource.cloud:
-          if (path.contains('.m3u8') || path.contains('hls')) {
+          try {
             await cancellable(
-              _player.setAudioSource(
-                HlsAudioSource(
-                  Uri.parse(path),
-                  headers: {
-                    'User-Agent':
-                        'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36',
-                  },
-                ),
-              ),
-            ).timeout(const Duration(seconds: 30));
-          } else {
-            await cancellable(
-              _player.setAudioSource(
-                ProgressiveAudioSource(
-                  Uri.parse(path),
-                  headers: {
-                    'User-Agent':
-                        'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36',
-                  },
-                ),
-              ),
-            ).timeout(const Duration(seconds: 30));
+              _player.setUrl(path),
+            ).timeout(const Duration(seconds: 25));
+          } catch (cloudErr) {
+            debugPrint('Direct setUrl failed for cloud, trying HlsAudioSource without headers: $cloudErr');
+            if (isStale()) return false;
+            if (path.contains('.m3u8') || path.contains('hls')) {
+              await cancellable(
+                _player.setAudioSource(HlsAudioSource(Uri.parse(path))),
+              ).timeout(const Duration(seconds: 25));
+            } else {
+              await cancellable(
+                _player.setAudioSource(ProgressiveAudioSource(Uri.parse(path))),
+              ).timeout(const Duration(seconds: 25));
+            }
           }
           break;
       }
@@ -344,12 +336,14 @@ class JustAudioService {
   }
 
   Future<int> getDuration() async {
-    Duration? duration;
-    while (duration == null) {
+    Duration? duration = _player.duration;
+    int retries = 0;
+    while (duration == null && retries < 25) {
+      await Future.delayed(const Duration(milliseconds: 20));
       duration = _player.duration;
-      await Future.delayed(Duration(milliseconds: 20));
+      retries++;
     }
-    return duration.inMilliseconds;
+    return duration?.inMilliseconds ?? _player.duration?.inMilliseconds ?? 0;
   }
 
   Future<void> setRepeatMode(LoopMode mode) async {
@@ -371,7 +365,7 @@ class JustAudioService {
       debugPrint('Already handling an error, skipping re-entry');
       return;
     }
-    debugPrint('🪲Just Audio Error : $error');
+    debugPrint('[Audio] Just Audio Error : $error');
     _handlingError = true;
     if (_source == AudioSource.local) {
       await _onComplete?.call();
@@ -452,21 +446,19 @@ class PodcastProxy {
         });
         request.response.headers.set('Connection', 'keep-alive');
 
-        // 🌟 کلید حل مشکل: استفاده از pipe هوشمند دارت
-        // این متد مدیریت Backpressure را به طور خودکار به سیستم‌عامل می‌سپارد.
-        // وقتی پلیر دانلود را متوقف کند، دارت به صورت خودکار خواندن از سرور اصلی را متوقف می‌کند؛
-        // بدون اینکه کانکشن را ببندد یا نیاز به مدیریت دستی بایت‌ها باشد.
+        // Pipe smart Dart stream
+        // Backpressure management handled automatically
         await request.response.addStream(response);
         await request.response.close();
       } catch (e) {
-        debugPrint('⚠️ PodcastProxy Error: $e');
+        debugPrint('[PodcastProxy] Error: $e');
         _respondWithError(request, HttpStatus.badGateway);
       }
     });
 
     final port = _server!.port;
     debugPrint(
-      '🚀 PodcastProxy Running on: http://127.0.0.1:$port/podcast.mp3',
+      '[PodcastProxy] Running on: http://127.0.0.1:$port/podcast.mp3',
     );
     return 'http://127.0.0.1:$port/podcast.mp3';
   }

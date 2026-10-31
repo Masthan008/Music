@@ -2,7 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:material_ui/material_ui.dart';
 
-enum PresetTheme { dark, green, light, orange }
+enum PresetTheme { dark, light, orange }
 
 class AppThemeData {
   final String id;
@@ -125,7 +125,6 @@ class ThemeManager {
   ThemeManager._();
 
   static final AppThemeData dark = _buildDarkTheme();
-  static final AppThemeData green = _buildGreenTheme();
   static final AppThemeData light = _buildLightTheme();
   static final AppThemeData orange = _buildOrangeTheme();
 
@@ -224,7 +223,6 @@ class ThemeManager {
   static List<AppThemeData> get allThemes => [
     dark,
     light,
-    green,
     orange,
     ..._customThemes.values,
   ];
@@ -258,20 +256,6 @@ AppThemeData _buildDarkTheme() {
   );
 }
 
-AppThemeData _buildGreenTheme() {
-  return _buildTheme(
-    id: 'green',
-    brightness: Brightness.light,
-    scaffoldBackground: const Color(0xfff1f8dc),
-    thumbColor: const Color(0xff03c893),
-    appBarBackground: const Color(0xff86E7B8),
-    appBarShadowColor: const Color(0xFF601410),
-    mediaColor: const Color(0xff9ff3c7),
-    iconColor: Colors.black,
-    blur: 12,
-    opacity: 0.1,
-  );
-}
 
 AppThemeData _buildLightTheme() {
   return _buildTheme(

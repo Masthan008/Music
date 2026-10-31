@@ -3,13 +3,15 @@ import 'package:sound_center/core/constants/constants.dart';
 import 'package:sound_center/core/util/audio/audio_util.dart';
 import 'package:sound_center/core/util/date_util.dart';
 import 'package:sound_center/features/cloud/domain/entity/cloud_entity.dart';
+import 'package:sound_center/shared/widgets/glass.dart';
 import 'package:sound_center/shared/widgets/network_image.dart';
 
 class CloudItemTemplate extends StatelessWidget {
-  const CloudItemTemplate({super.key, this.item});
+  const CloudItemTemplate({super.key, this.item, this.isPlaying = false});
 
   final double size = 50;
   final dynamic item;
+  final bool isPlaying;
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +36,25 @@ class CloudItemTemplate extends StatelessWidget {
                 tag: item.id,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: NetworkCacheImage(
-                    url: item.artworkUrl,
-                    fit: item.artworkUrl != null
-                        ? BoxFit.cover
-                        : BoxFit.scaleDown,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      NetworkCacheImage(
+                        url: item.artworkUrl,
+                        fit: item.artworkUrl != null
+                            ? BoxFit.cover
+                            : BoxFit.scaleDown,
+                      ),
+                      if (isPlaying)
+                        Container(
+                          color: Colors.black.withValues(alpha: 0.45),
+                          child: Icon(
+                            Icons.graphic_eq_rounded,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: 24,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ),
@@ -55,7 +71,14 @@ class CloudItemTemplate extends StatelessWidget {
                     item.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight:
+                          isPlaying ? FontWeight.bold : FontWeight.normal,
+                      color: isPlaying
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                   Row(
                     mainAxisSize: .min,
@@ -88,9 +111,35 @@ class CloudItemTemplate extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: .end,
                   children: [
-                    Text(
-                      AudioUtil.convertTime(item.duration),
-                      style: infoTextStyle,
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 6,
+                      children: [
+                        Glass(
+                          borderRadius: 8,
+                          blur: 6,
+                          opacity: 0.22,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 5,
+                              vertical: 1.5,
+                            ),
+                            child: Text(
+                              'HQ',
+                              style: TextStyle(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.primary,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Text(
+                          AudioUtil.convertTime(item.duration),
+                          style: infoTextStyle,
+                        ),
+                      ],
                     ),
                     if (item.playCount > 0)
                       Directionality(

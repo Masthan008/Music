@@ -35,7 +35,7 @@ void main() async {
     try {
       initialBackupPath = await openWithApp.getInitialFile();
     } catch (e, st) {
-      debugPrint('❌ getInitialFile failed: $e\n$st');
+      debugPrint('[Init] getInitialFile failed: $e\n$st');
     }
   }
 
@@ -89,9 +89,9 @@ Future<void> _init() async {
     await AndroidMediaStore.ensureInitialized();
     await DownloadManager.init();
     await LiquidGlassWidgets.initialize();
-    debugPrint('✅ _init() completed successfully');
+    debugPrint('[Init] _init() completed successfully');
   } catch (e, st) {
-    debugPrint('❌ Error in _init(): $e\n$st');
+    debugPrint('[Init] Error in _init(): $e\n$st');
   }
 }
 
@@ -128,7 +128,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _openBackup(String path) {
-    print(path);
+    debugPrint('[Backup] Opening backup path: $path');
     BackupDialog dialog = BackupDialog();
     dialog.restoreFromFile(context, path);
   }

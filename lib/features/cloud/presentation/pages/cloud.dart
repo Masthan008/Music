@@ -7,6 +7,7 @@ import 'package:sound_center/features/cloud/presentation/Widgets/track_template/
 import 'package:sound_center/features/cloud/presentation/Widgets/track_template/cloud_tool_bar.dart';
 import 'package:sound_center/features/cloud/presentation/bloc/cloud_bloc.dart';
 import 'package:sound_center/features/cloud/presentation/bloc/cloud_status.dart';
+import 'package:sound_center/shared/widgets/glass_pill.dart';
 import 'package:sound_center/shared/widgets/loading.dart';
 import 'package:soundcloud_explode_dart/soundcloud_explode_dart.dart';
 
@@ -65,60 +66,83 @@ class _SoundCloudLanguageBar extends StatefulWidget {
 class _SoundCloudLanguageBarState extends State<_SoundCloudLanguageBar> {
   String _selectedLanguage = 'All';
 
-  static const List<Map<String, String>> _languages = [
-    {'name': 'All', 'label': '⚡ Discover', 'query': 'Trending'},
-    {'name': 'Hindi', 'label': '🇮🇳 हिन्दी (Hindi)', 'query': 'Hindi Hits'},
-    {'name': 'Telugu', 'label': '🎬 తెలుగు (Telugu)', 'query': 'Telugu Hits'},
-    {'name': 'Tamil', 'label': '🎵 தமிழ் (Tamil)', 'query': 'Tamil Hits'},
-    {'name': 'Urdu', 'label': '🎙️ اردو (Urdu)', 'query': 'Urdu Melodies'},
-    {'name': 'English', 'label': '🌍 English', 'query': 'English Top Hits'},
+  static const List<Map<String, dynamic>> _languages = [
+    {
+      'id': 'All',
+      'label': 'Discover',
+      'icon': Icons.auto_awesome_rounded,
+      'query': 'Trending',
+    },
+    {
+      'id': 'Hindi',
+      'label': 'हिन्दी (Hindi)',
+      'icon': Icons.language_rounded,
+      'query': 'Hindi Hits',
+    },
+    {
+      'id': 'Telugu',
+      'label': 'తెలుగు (Telugu)',
+      'icon': Icons.movie_filter_rounded,
+      'query': 'Telugu Hits',
+    },
+    {
+      'id': 'Tamil',
+      'label': 'தமிழ் (Tamil)',
+      'icon': Icons.music_note_rounded,
+      'query': 'Tamil Hits',
+    },
+    {
+      'id': 'Urdu',
+      'label': 'اردو (Urdu)',
+      'icon': Icons.mic_external_on_rounded,
+      'query': 'Urdu Melodies',
+    },
+    {
+      'id': 'Punjabi',
+      'label': 'ਪੰਜਾਬੀ (Punjabi)',
+      'icon': Icons.queue_music_rounded,
+      'query': 'Punjabi Hits',
+    },
+    {
+      'id': 'English',
+      'label': 'English Hits',
+      'icon': Icons.public_rounded,
+      'query': 'English Top Hits',
+    },
   ];
 
   @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<CloudBloc>(context);
-    final theme = Theme.of(context);
-    return SizedBox(
-      height: 38,
-      child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        scrollDirection: Axis.horizontal,
-        itemCount: _languages.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final lang = _languages[index];
-          final isSelected = _selectedLanguage == lang['name'];
-          return ChoiceChip(
-            showCheckmark: false,
-            label: Text(
-              lang['label']!,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                color: isSelected
-                    ? theme.colorScheme.onPrimary
-                    : theme.colorScheme.onSurface,
+    final items = _languages
+        .map(
+          (lang) => GlassPillItem(
+            id: lang['id'] as String,
+            label: lang['label'] as String,
+            icon: lang['icon'] as IconData,
+          ),
+        )
+        .toList();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: GlassPillBar(
+        height: 38,
+        items: items,
+        selectedId: _selectedLanguage,
+        onSelected: (id) {
+          setState(() => _selectedLanguage = id);
+          if (id == 'All') {
+            bloc.add(LoadHistory());
+          } else {
+            final lang = _languages.firstWhere((l) => l['id'] == id);
+            bloc.add(
+              SearchCloud(
+                queryText: lang['query'] as String,
+                filter: SearchFilter.none,
               ),
-            ),
-            selected: isSelected,
-            selectedColor: theme.colorScheme.primary,
-            backgroundColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
-            onSelected: (selected) {
-              if (selected) {
-                setState(() => _selectedLanguage = lang['name']!);
-                if (lang['name'] == 'All') {
-                  bloc.add(LoadHistory());
-                } else {
-                  bloc.add(
-                    SearchCloud(
-                      queryText: lang['query']!,
-                      filter: SearchFilter.none,
-                    ),
-                  );
-                }
-              }
-            },
-          );
+            );
+          }
         },
       ),
     );

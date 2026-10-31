@@ -47,12 +47,30 @@ class StreamTemplate extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(fontSize: 16),
                 ),
-                Text(
-                  stats.isOnline ? "Live 🔴" : '',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: infoTextStyle,
-                ),
+                if (stats.isOnline)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 4,
+                    children: [
+                      Container(
+                        width: 7,
+                        height: 7,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.redAccent,
+                        ),
+                      ),
+                      Text(
+                        'LIVE',
+                        style: infoTextStyle.copyWith(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.redAccent,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),
