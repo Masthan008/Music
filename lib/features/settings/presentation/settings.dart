@@ -67,7 +67,7 @@ class Settings extends StatelessWidget {
                       applicationVersion: VERSION_NAME,
                       applicationName: "Sound Center",
                       applicationLegalese:
-                          "© 2025 Ali Zare\nReleased under the GNU GPLv3 License.",
+                          "Sound Center Music Player\nAll-in-one Audio & Streaming Hub\nReleased under GNU GPLv3 License.",
                       applicationIcon: Image.asset(
                         'assets/app.png',
                         width: 30,

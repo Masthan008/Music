@@ -4,27 +4,75 @@ class FeaturedPodcasts {
   static List<SubscriptionEntity> get popularPodcasts => [
         SubscriptionEntity(
           title: 'The Ranveer Show (TRS)',
-          feedUrl: 'https://anchor.fm/s/2eb03960/podcast/rss',
+          feedUrl: 'https://feeds.simplecast.com/7PWFZi_d',
           subscribedAt: DateTime(2025, 1, 1),
           lastListenAt: DateTime(2025, 1, 1),
           updateTime: DateTime(2025, 1, 1),
-          totalEpisodes: 500,
+          totalEpisodes: 233,
+          haveNewEpisode: false,
+          author: 'BeerBiceps aka Ranveer Allahbadia',
+          artworkUrl:
+              'https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/58/6e/a9/586ea984-3bf8-302e-a8fd-2e7b002044d2/mza_2944927475341717105.jpg/600x600bb.jpg',
+        ),
+        SubscriptionEntity(
+          title: 'The Ranveer Show हिंदी',
+          feedUrl: 'https://anchor.fm/s/f5d53400/podcast/rss',
+          subscribedAt: DateTime(2025, 1, 1),
+          lastListenAt: DateTime(2025, 1, 1),
+          updateTime: DateTime(2025, 1, 1),
+          totalEpisodes: 629,
           haveNewEpisode: false,
           author: 'BeerBiceps',
           artworkUrl:
-              'https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded_nologo/6121408/6121408-1605705350993-9426f4f21db59.jpg',
+              'https://is1-ssl.mzstatic.com/image/thumb/Podcasts122/v4/85/0f/b1/850fb175-b567-dd00-59c1-f1160724d494/mza_11559786574812814174.jpg/600x600bb.jpg',
         ),
         SubscriptionEntity(
           title: 'Finshots Daily',
-          feedUrl: 'https://anchor.fm/s/1155986c/podcast/rss',
+          feedUrl: 'https://anchor.fm/s/37a76020/podcast/rss',
           subscribedAt: DateTime(2025, 1, 1),
           lastListenAt: DateTime(2025, 1, 1),
           updateTime: DateTime(2025, 1, 1),
-          totalEpisodes: 300,
+          totalEpisodes: 1659,
           haveNewEpisode: false,
           author: 'Finshots',
           artworkUrl:
-              'https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded_nologo/2290460/2290460-1577786435649-4aa2ea12e3e5c.jpg',
+              'https://is1-ssl.mzstatic.com/image/thumb/Podcasts114/v4/b5/e4/39/b5e4395d-3334-30aa-dc4a-afa27464c041/mza_4139100016695234083.jpg/600x600bb.jpg',
+        ),
+        SubscriptionEntity(
+          title: 'Raw Talks With Vamshi (Telugu)',
+          feedUrl: 'https://anchor.fm/s/d96ed9d8/podcast/rss',
+          subscribedAt: DateTime(2025, 1, 1),
+          lastListenAt: DateTime(2025, 1, 1),
+          updateTime: DateTime(2025, 1, 1),
+          totalEpisodes: 149,
+          haveNewEpisode: false,
+          author: 'Vamshi Kurapati',
+          artworkUrl:
+              'https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/c4/fb/f4/c4fbf455-c5e2-1707-8a17-d44f0fb58559/mza_16545377357887817779.jpg/600x600bb.jpg',
+        ),
+        SubscriptionEntity(
+          title: 'Vada Poche Tamil Podcast',
+          feedUrl: 'https://anchor.fm/s/1dd43844/podcast/rss',
+          subscribedAt: DateTime(2025, 1, 1),
+          lastListenAt: DateTime(2025, 1, 1),
+          updateTime: DateTime(2025, 1, 1),
+          totalEpisodes: 327,
+          haveNewEpisode: false,
+          author: 'Bharath, Yuva, Jawhar, Sharif',
+          artworkUrl:
+              'https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/c3/82/12/c3821294-ea22-6fd2-1994-10d7fd2ef824/mza_4758444800376640199.jpg/600x600bb.jpg',
+        ),
+        SubscriptionEntity(
+          title: 'Kahani Jaani Anjaani (Hindi Stories)',
+          feedUrl: 'https://feeds.captivate.fm/kahani-jaani-anjaani/',
+          subscribedAt: DateTime(2025, 1, 1),
+          lastListenAt: DateTime(2025, 1, 1),
+          updateTime: DateTime(2025, 1, 1),
+          totalEpisodes: 155,
+          haveNewEpisode: false,
+          author: 'Piyush Agarwal',
+          artworkUrl:
+              'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/53/02/c5/5302c525-2286-f7a6-9506-4d53a3cd1eac/mza_16076038888513127231.jpg/600x600bb.jpg',
         ),
         SubscriptionEntity(
           title: 'The Daily',
@@ -32,7 +80,7 @@ class FeaturedPodcasts {
           subscribedAt: DateTime(2025, 1, 1),
           lastListenAt: DateTime(2025, 1, 1),
           updateTime: DateTime(2025, 1, 1),
-          totalEpisodes: 1000,
+          totalEpisodes: 3000,
           haveNewEpisode: false,
           author: 'The New York Times',
           artworkUrl:
@@ -44,7 +92,7 @@ class FeaturedPodcasts {
           subscribedAt: DateTime(2025, 1, 1),
           lastListenAt: DateTime(2025, 1, 1),
           updateTime: DateTime(2025, 1, 1),
-          totalEpisodes: 800,
+          totalEpisodes: 2800,
           haveNewEpisode: false,
           author: 'TED',
           artworkUrl:
@@ -56,23 +104,11 @@ class FeaturedPodcasts {
           subscribedAt: DateTime(2025, 1, 1),
           lastListenAt: DateTime(2025, 1, 1),
           updateTime: DateTime(2025, 1, 1),
-          totalEpisodes: 1200,
+          totalEpisodes: 290,
           haveNewEpisode: false,
           author: 'BBC World Service',
           artworkUrl:
               'https://ichef.bbci.co.uk/images/ic/1024x1024/p02nq0gn.jpg',
-        ),
-        SubscriptionEntity(
-          title: 'Maha Bharat with Dhruv Rathee',
-          feedUrl: 'https://feeds.megaphone.fm/GLT6442687105',
-          subscribedAt: DateTime(2025, 1, 1),
-          lastListenAt: DateTime(2025, 1, 1),
-          updateTime: DateTime(2025, 1, 1),
-          totalEpisodes: 50,
-          haveNewEpisode: false,
-          author: 'Spotify Studios',
-          artworkUrl:
-              'https://cms.megaphone.fm/channel_images/63519c22-901c-11eb-a0aa-d790d96ae234/1400.jpg',
         ),
       ];
 }

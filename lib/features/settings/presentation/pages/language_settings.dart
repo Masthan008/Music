@@ -16,6 +16,23 @@ class _LanguageSettingsState extends State<LanguageSettings> {
   late Locale locale;
   late final SettingBloc bloc;
 
+  static const List<Map<String, String>> _allLanguages = [
+    {'code': 'en', 'name': 'English'},
+    {'code': 'hi', 'name': 'हिन्दी (Hindi)'},
+    {'code': 'te', 'name': 'తెలుగు (Telugu)'},
+    {'code': 'ta', 'name': 'தமிழ் (Tamil)'},
+    {'code': 'ur', 'name': 'اردو (Urdu)'},
+    {'code': 'bn', 'name': 'বাংলা (Bengali)'},
+    {'code': 'mr', 'name': 'मराठी (Marathi)'},
+    {'code': 'gu', 'name': 'ગુજરાતી (Gujarati)'},
+    {'code': 'kn', 'name': 'ಕನ್ನಡ (Kannada)'},
+    {'code': 'ml', 'name': 'മലയാളം (Malayalam)'},
+    {'code': 'pa', 'name': 'ਪੰਜਾਬੀ (Punjabi)'},
+    {'code': 'or', 'name': 'ଓଡ଼ିଆ (Odia)'},
+    {'code': 'as', 'name': 'অসমীয়া (Assamese)'},
+    {'code': 'fa', 'name': 'فارسی (Persian)'},
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -52,7 +69,7 @@ class _LanguageSettingsState extends State<LanguageSettings> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Select Language',
+                        'Select Language (13+)',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -63,24 +80,28 @@ class _LanguageSettingsState extends State<LanguageSettings> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                RadioGroup<Locale>(
-                  onChanged: (v) {
-                    if (v == null) return;
-                    setState(() => locale = v);
-                    bloc.add(ChangeLocale(locale));
-                  },
-                  groupValue: locale,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      radioItem(const Locale("en"), "English"),
-                      radioItem(const Locale("hi"), "हिन्दी (Hindi)"),
-                      radioItem(const Locale("te"), "తెలుగు (Telugu)"),
-                      radioItem(const Locale("ta"), "தமிழ் (Tamil)"),
-                      radioItem(const Locale("bn"), "বাংলা (Bengali)"),
-                      radioItem(const Locale("fa"), "فارسی (Persian)"),
-                    ],
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.sizeOf(context).height * 0.55,
+                  ),
+                  child: RadioGroup<Locale>(
+                    onChanged: (v) {
+                      if (v == null) return;
+                      setState(() => locale = v);
+                      bloc.add(ChangeLocale(locale));
+                    },
+                    groupValue: locale,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _allLanguages.length,
+                      itemBuilder: (context, index) {
+                        final item = _allLanguages[index];
+                        return radioItem(
+                          Locale(item['code']!),
+                          item['name']!,
+                        );
+                      },
+                    ),
                   ),
                 ),
               ],
@@ -99,7 +120,7 @@ class _LanguageSettingsState extends State<LanguageSettings> {
         bloc.add(ChangeLocale(itemLocale));
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
         child: Row(
           children: [
             Radio<Locale>(value: itemLocale),
@@ -107,7 +128,7 @@ class _LanguageSettingsState extends State<LanguageSettings> {
             Expanded(
               child: Text(
                 languageName,
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
             ),
           ],

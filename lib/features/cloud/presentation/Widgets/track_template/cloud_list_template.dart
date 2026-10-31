@@ -30,72 +30,109 @@ class CloudListTemplate extends StatelessWidget {
   Widget build(BuildContext context) {
     final playerRepo = CloudPlayerRepositoryImp();
     if (items.playlists.isEmpty && items.tracks.isEmpty) {
-      final genres = [
-        'Trending',
-        'Top 50 Pop',
-        'Bollywood Hits',
-        'Lo-Fi Beats',
-        'Electronic',
-        'Hip-Hop',
-        'Acoustic',
-        'Devotional',
-      ];
       final bloc = BlocProvider.of<CloudBloc>(context);
-      return Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.cloud_queue_rounded,
-                size: 64,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Discover Music on SoundCloud',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Tap a genre to search and stream tracks instantly',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                alignment: WrapAlignment.center,
-                children: genres.map((genre) {
-                  return ActionChip(
-                    avatar: Icon(
-                      Icons.music_note_rounded,
-                      size: 16,
-                      color: Theme.of(context).colorScheme.primary,
+      final categories = [
+        {
+          'title': '🇮🇳 Hindi (हिन्दी)',
+          'queries': ['Bollywood Hits', 'Hindi Romantic', 'Arijit Singh Hits', 'Hindi Lo-Fi'],
+        },
+        {
+          'title': '🎬 Telugu (తెలుగు)',
+          'queries': ['Telugu Hits', 'Tollywood Top 50', 'Telugu Melodies', 'Sid Sriram Telugu'],
+        },
+        {
+          'title': '🎵 Tamil (தமிழ்)',
+          'queries': ['Tamil Hits', 'Kollywood Chartbusters', 'Anirudh Tamil', 'Tamil Melodies'],
+        },
+        {
+          'title': '🎙️ Urdu (اردو)',
+          'queries': ['Urdu Ghazals', 'Coke Studio Urdu', 'Rahat Fateh Ali', 'Urdu Melodies'],
+        },
+        {
+          'title': '🌍 English Hits',
+          'queries': ['English Top 50', 'Global Pop', 'English Acoustic', 'Billboard Hot 100'],
+        },
+      ];
+
+      return SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.cloud_queue_rounded,
+                    size: 48,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Explore SoundCloud Music',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
-                    label: Text(genre),
-                    onPressed: () {
-                      bloc.add(
-                        SearchCloud(
-                          queryText: genre,
-                          filter: SearchFilter.none,
-                        ),
-                      );
-                    },
-                  );
-                }).toList(),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Select any language or category to stream instantly',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 18),
+            ...categories.map((cat) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      cat['title'] as String,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: (cat['queries'] as List<String>).map((query) {
+                        return ActionChip(
+                          avatar: Icon(
+                            Icons.play_circle_outline_rounded,
+                            size: 16,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          label: Text(
+                            query,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                          onPressed: () {
+                            bloc.add(
+                              SearchCloud(
+                                queryText: query,
+                                filter: SearchFilter.none,
+                              ),
+                            );
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
         ),
       );
     }

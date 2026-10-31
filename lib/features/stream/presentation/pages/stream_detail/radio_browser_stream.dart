@@ -52,16 +52,48 @@ class _RadioStreamViewState extends State<RadioStreamView> {
   }
 
   Future<void> _init() async {
-    final res = await widget.repository.loadStationInfo(widget.stream.uuid!);
-    if (res == null) {
-      if (mounted) {
-        // ignore: use_build_context_synchronously
-        Navigator.pop(context);
-      }
-      return;
+    radio.Station? res;
+    if (widget.stream.uuid != null) {
+      res = await widget.repository.loadStationInfo(widget.stream.uuid!);
     }
-    station = res;
+    if (res == null) {
+      station = radio.Station(
+        changeUUID: widget.stream.uuid ?? 'stream',
+        stationUUID: widget.stream.uuid ?? 'stream',
+        serverUUID: null,
+        name: widget.stream.title,
+        url: widget.stream.url,
+        urlResolved: widget.stream.url,
+        homepage: widget.stream.url,
+        favicon: widget.stream.cover,
+        tags: 'Online Radio',
+        country: 'India',
+        countryCode: 'IN',
+        state: null,
+        language: 'All Languages',
+        languageCodes: 'in',
+        votes: 100,
+        lastChangeTime: DateTime.now(),
+        codec: widget.stream.url.contains('.m3u8') ? 'HLS' : 'MP3',
+        bitrate: 128,
+        hls: widget.stream.url.contains('.m3u8'),
+        lastCheckOk: true,
+        lastCheckTime: DateTime.now(),
+        lastCheckOkTime: DateTime.now(),
+        lastLocalCheckTime: DateTime.now(),
+        clickTimestamp: DateTime.now(),
+        clickCount: 100,
+        clickTrend: 1,
+        sslError: false,
+        geoLat: null,
+        geoLong: null,
+        hasExtendedInfo: false,
+      );
+    } else {
+      station = res;
+    }
     _checkSubscription();
+    if (mounted) setState(() {});
   }
 
   void _checkSubscription() async {

@@ -831,11 +831,19 @@ class AppLocalizationDelegate extends LocalizationsDelegate<S> {
   List<Locale> get supportedLocales {
     return const <Locale>[
       Locale.fromSubtags(languageCode: 'en'),
-      Locale.fromSubtags(languageCode: 'fa'),
       Locale.fromSubtags(languageCode: 'hi'),
       Locale.fromSubtags(languageCode: 'te'),
       Locale.fromSubtags(languageCode: 'ta'),
+      Locale.fromSubtags(languageCode: 'ur'),
       Locale.fromSubtags(languageCode: 'bn'),
+      Locale.fromSubtags(languageCode: 'mr'),
+      Locale.fromSubtags(languageCode: 'gu'),
+      Locale.fromSubtags(languageCode: 'kn'),
+      Locale.fromSubtags(languageCode: 'ml'),
+      Locale.fromSubtags(languageCode: 'pa'),
+      Locale.fromSubtags(languageCode: 'or'),
+      Locale.fromSubtags(languageCode: 'as'),
+      Locale.fromSubtags(languageCode: 'fa'),
     ];
   }
 

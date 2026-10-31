@@ -27,6 +27,14 @@ Map<String, LibraryLoader> _deferredLibraries = {
   'te': () => new SynchronousFuture(null),
   'ta': () => new SynchronousFuture(null),
   'bn': () => new SynchronousFuture(null),
+  'ur': () => new SynchronousFuture(null),
+  'mr': () => new SynchronousFuture(null),
+  'gu': () => new SynchronousFuture(null),
+  'kn': () => new SynchronousFuture(null),
+  'ml': () => new SynchronousFuture(null),
+  'pa': () => new SynchronousFuture(null),
+  'or': () => new SynchronousFuture(null),
+  'as': () => new SynchronousFuture(null),
 };
 
 MessageLookupByLibrary? _findExact(String localeName) {
@@ -42,9 +50,21 @@ MessageLookupByLibrary? _findExact(String localeName) {
     case 'ta':
       return messages_ta.messages;
     case 'bn':
+    case 'as':
       return messages_bn.messages;
+    case 'ur':
+      return messages_fa.messages;
+    case 'mr':
+    case 'gu':
+    case 'pa':
+    case 'or':
+      return messages_hi.messages;
+    case 'kn':
+      return messages_te.messages;
+    case 'ml':
+      return messages_ta.messages;
     default:
-      return null;
+      return messages_en.messages;
   }
 }
 

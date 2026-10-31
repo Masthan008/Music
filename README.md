@@ -1,80 +1,158 @@
+# 🎵 Sound Center
+
 <div align="center">
 
-# Sound Center 🎵
+![Sound Center Banner](assets/app.png)
 
-![Flutter](https://img.shields.io/badge/Flutter-3.x-blue)
-![Platform](https://img.shields.io/badge/platform-Android%20|%20Linux-green)
-[![GitHub release](https://img.shields.io/github/v/release/azare77/sound_center?color=D3BEAB)](https://github.com/azare77/sound_center/releases)
-[![License](https://img.shields.io/github/license/azare77/sound_center?color=D3BEAB)](LICENSE)
+### The Next-Generation Music Player & Streaming Experience for Android
+
+[![Version](https://img.shields.io/badge/release-v1.2.0-blue.svg?style=for-the-badge)](https://github.com/Masthan008/Music/releases)
+[![Platform](https://img.shields.io/badge/platform-Android-green.svg?style=for-the-badge)](https://github.com/Masthan008/Music)
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B.svg?style=for-the-badge&logo=flutter)](https://flutter.dev)
+[![Indus Appstore](https://img.shields.io/badge/Indus%20Appstore-Ready-orange.svg?style=for-the-badge)](https://www.indusappstore.com)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-yellow.svg?style=for-the-badge)](https://www.gnu.org/licenses/gpl-3.0)
+
+<br/>
+
+**Sound Center** is a high-performance, elegant audio player and streaming hub designed specifically for Android and the **Indus Appstore**. Featuring a **Liquid Glass UI** with frosted crystal translucency, Sound Center brings together offline music playback, live radio streaming, podcast discovery, and cloud music streaming in 13+ Indian languages.
+
+</div>
 
 ---
-</div>
 
-**A simple and practical audio player built with Flutter**  
-This app provides playback of local music, podcast search and streaming, offline downloads,
-background playback, along with customization features.  
-Currently available on Android and Linux desktop, with support for English and Farsi languages.
+## ✨ Key Highlights
 
-### Installation
+### 💎 Modern Liquid Glass UI
+- **Frosted Crystal Glass**: Translucent dialogs, floating mini-player, full-screen player, playlist cards, and headers powered by `liquid_glass_widgets`.
+- **Dual Visual Themes**: Refined **Light Theme** (clean porcelain backdrop with cobalt blue accents) and **Dark Theme** (deep pitch-black with vibrant neon highlights).
+- **Responsive Layout**: Fluid animations with orientation-aware headers and gesture navigation.
 
-[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/en/packages/app.soundcenter.player/)
+### 🎵 High-Performance Offline Music Player
+- **Automatic Media Scanning**: Instantly discovers music on internal and SD card storage via Android MediaStore.
+- **Smart Grouping**: Browse by Songs, Albums, Artists, Genres, Folders, and Playlists.
+- **Queue Management**: Drag-and-drop playlist reordering, shuffle, repeat one/all, and instant search.
+- **Filesystem Integrity**: Dual-tier deletion supporting scoped storage and direct filesystem synchronization.
 
-## Features
+### 📻 24/7 Live Radio Streams
+- **Zero-Lag Playback**: Dual decoding engine supporting both **HLS (`.m3u8`)** live streams and **Progressive ICY MP3/AAC** radio broadcasts.
+- **Curated Indian Stations**:
+  - 🇮🇳 **AIR Vividh Bharati** (National Hindi)
+  - 📻 **Bolly 92.3FM** (Non-stop Bollywood Hits)
+  - 🎧 **4Lobos Bollywood Radio**
+  - 🎶 **Fnf.Fm Hindi Hits**
+  - 🎬 **London Telugu Radio** & **Melody Radio Telugu**
+  - 🎵 **89.4 Tamil FM**
+  - 🎙️ **AIR Urdu Live**
+  - 🌍 **BBC World Service News**
+- **Radio Browser Integration**: Access to 30,000+ free worldwide radio stations.
+
+### 🎙️ Podcast Explorer & Hub
+- **Reliable RSS Parser**: Fast feed fetching with custom browser headers to prevent CDN connection timeouts.
+- **Popular Featured Shows**:
+  - *The Ranveer Show (TRS)* - BeerBiceps (English & Hindi)
+  - *Finshots Daily* - Daily financial analysis
+  - *Raw Talks With Vamshi* - Telugu business podcast
+  - *Vada Poche Tamil Podcast*
+  - *Kahani Jaani Anjaani* - Hindi weekly stories
+  - *TED Talks Daily* & *BBC Global News*
+- **Offline Downloads**: Download podcast episodes directly for offline listening.
+
+### ☁️ SoundCloud Cloud Streamer
+- **Dedicated Language Quick-Bar**: 1-tap filtering for:
+  - 🇮🇳 **Hindi (हिन्दी)**: Bollywood Hits, Hindi Romance, Arijit Singh Hits, Lo-Fi
+  - 🎬 **Telugu (తెలుగు)**: Telugu Chartbusters, Tollywood Top 50, Sid Sriram
+  - 🎵 **Tamil (தமிழ்)**: Kollywood Chartbusters, Anirudh Hits, Tamil Melodies
+  - 🎙️ **Urdu (اردو)**: Urdu Ghazals, Coke Studio, Sufi & Melodies
+  - 🌍 **English**: Global Top 50, Billboard Pop, Acoustic Chill
+- **Instant Streaming**: Direct transcode extraction supporting both progressive and HLS streams.
+
+### ⏱️ Precision Sleep Timer
+- Custom countdown timer with preset shortcuts (15m, 30m, 45m, 1h, 2h).
+- Smooth volume fade-out before audio pauses, preventing abrupt cutoffs while sleeping.
+
+### 🎤 Synchronized Real-Time Lyrics
+- Integrated real-time karaoke lyrics powered by the LRCLIB open-source database.
+- Auto-scrolls in sync with audio playback with 1-tap time-jump seeking.
+
+### 🇮🇳 13+ Indian Regional Languages
+Tailored for Indian users with native script support:
+- **English**
+- **हिन्दी (Hindi)**
+- **తెలుగు (Telugu)**
+- **தமிழ் (Tamil)**
+- **اردو (Urdu)**
+- **বাংলা (Bengali)**
+- **मराठी (Marathi)**
+- **ગુજરાતી (Gujarati)**
+- **ಕನ್ನಡ (Kannada)**
+- **മലയാളം (Malayalam)**
+- **ਪੰਜਾਬੀ (Punjabi)**
+- **ଓଡ଼ିଆ (Odia)**
+- **অসমীয়া (Assamese)**
+- **فارسی (Persian)**
+
+---
+
+## 🏗️ Architecture & Technology Stack
+
+| Layer | Technology |
+|---|---|
+| **Framework** | Flutter 3.x / Dart 3.10+ |
+| **State Management** | BLoC (flutter_bloc) pattern |
+| **Audio Engine** | `just_audio` + `audio_service` + ExoPlayer |
+| **Glassmorphism** | `liquid_glass_widgets` (custom shader & backdrop blur) |
+| **Database** | Drift (SQLite ORM) + SharedPreferences |
+| **Networking** | `http`, `dio`, `radio_browser_api`, `podcast_search` |
+| **Lyrics** | LRCLIB REST API |
+
+---
+
+## 🚀 Building & Running Locally
+
+### Prerequisites
+- Flutter SDK 3.x (compatible with Dart 3.10+)
+- Android SDK Platform 34+
+- Java 17+
+
+### Steps
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Masthan008/Music.git
+   cd Music
+   ```
+
+2. **Install Flutter dependencies:**
+   ```bash
+   flutter pub get
+   ```
+
+3. **Run on connected Android device / emulator:**
+   ```bash
+   flutter run
+   ```
+
+4. **Build Release APK:**
+   ```bash
+   flutter build apk --release
+   ```
+   The universal release APK will be generated at:
+   `build/app/outputs/flutter-apk/app-release.apk`
+
+---
+
+## 📦 Releases
+
+Download the latest signed APK directly from the [GitHub Releases](https://github.com/Masthan008/Music/releases) or find Sound Center on the **Indus Appstore**.
+
+---
+
+## 📄 License
+
+Sound Center is licensed under the [GNU General Public License v3.0 (GPLv3)](LICENSE).
+
+---
 
 <div align="center">
-
-| Feature                                   | Status / Notes                              |
-|-------------------------------------------|---------------------------------------------|
-| **Local audio scanning & playback**       | ✔ Playlists, queue, seek, shuffle          |
-| **Podcast search, streaming & downloads** | ✔ Search, stream, offline resume           |
-| **Background playback & system controls** | ✔ `audio_service`, MPRIS on desktop        |
-| **Downloads manager**                     | ✔ Background using `background_downloader` |
-| **Localization**                          | ✔ English & Farsi (`intl`)                 |
-| **Custom Themes**                         | ✔ Create Custom Themes and share them      |
-| **Live audio streams (internet radio)**   | ✔ Search and play radio stations           |
-| **Third-party sources (SoundCloud)**      | ✔ Search and play DRM free audios          |
-
+Crafted with ❤️ by Masthan | Designed for Music Lovers Worldwide
 </div>
-
-## Screenshots
-
-| ![Screenshot 1](fastlane/metadata/android/en-US/images/phoneScreenshots/01.jpeg)  | ![Screenshot 2](fastlane/metadata/android/en-US/images/phoneScreenshots/02.jpeg)  | ![Screenshot 3](fastlane/metadata/android/en-US/images/phoneScreenshots/03.jpeg) | ![Screenshot 4](fastlane/metadata/android/en-US/images/phoneScreenshots/04.jpeg) | ![Screenshot 5](fastlane/metadata/android/en-US/images/phoneScreenshots/05.jpeg)  |
-|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|----------------------------------------------------------------------------------|----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|
-| ![Screenshot 6](fastlane/metadata/android/en-US/images/phoneScreenshots/06.jpeg)  | ![Screenshot 7](fastlane/metadata/android/en-US/images/phoneScreenshots/07.jpeg)  | ![Screenshot 8](fastlane/metadata/android/en-US/images/phoneScreenshots/08.jpeg) | ![Screenshot 9](fastlane/metadata/android/en-US/images/phoneScreenshots/09.jpeg) | ![Screenshot 10](fastlane/metadata/android/en-US/images/phoneScreenshots/10.jpeg) |
-| ![Screenshot 11](fastlane/metadata/android/en-US/images/phoneScreenshots/11.jpeg) | ![Screenshot 12](fastlane/metadata/android/en-US/images/phoneScreenshots/12.jpeg) |                                                                                  |                                                                                  |                                                                                   |
-
-## Feedback & Support
-
-Found a bug? Have a feature request?  
-Please open an [Issue](https://github.com/azare77/sound_center/issues) or join the discussion!
-
-### Short notes
-
-- Architecture: modular features with Bloc for state management and a central `audio_handler` for
-  playback orchestration.
-- Permissions: the app requests storage/media permissions on first run to allow local scanning (
-  `permission_handler`).
-- Services: app uses iTunes/podcast index for Podcasts and Radio browser for streams
-
-### Support
-
-If you find this project useful, you can support its development with Bitcoin:
-
-* ₿ **Bitcoin:** [
-  `bc1qz55fanmmymj8kwe0jqkpj48ajm40wz5qnp2x78`](bitcoin:bc1qz55fanmmymj8kwe0jqkpj48ajm40wz5qnp2x78)
-
-## License
-
-Sound Center - A music and podcast player bringing multiple playback modes into one app. Copyright
-(C) 2026 Ali Zare
-
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU
-General Public License as published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
-even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with this program. If not,
-see <https://www.gnu.org/licenses/>.

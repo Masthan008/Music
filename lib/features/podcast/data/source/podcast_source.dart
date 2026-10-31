@@ -6,6 +6,9 @@ class PodcastSource {
   static final Map<String, Podcast> _podcastCache = {};
   static final Map<String, DateTime> _cachedTime = {};
 
+  static const String _userAgent =
+      'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36';
+
   static Future<SearchResult> search(String searchText) async {
     Search search = Search();
     PodcastProvider provider = AppSettingStorage.getSavedProvider();
@@ -37,10 +40,25 @@ class PodcastSource {
       }
     }
 
-    final podcast = await Feed.loadFeed(url: feedUrl);
-    _podcastCache[feedUrl] = podcast;
-    _cachedTime[feedUrl] = DateTime.now();
-    return podcast;
+    try {
+      final podcast = await Feed.loadFeed(
+        url: feedUrl.trim(),
+        userAgent: _userAgent,
+        timeout: const Duration(seconds: 30),
+      );
+      _podcastCache[feedUrl] = podcast;
+      _cachedTime[feedUrl] = DateTime.now();
+      return podcast;
+    } catch (e) {
+      // Retry once with blank user agent if custom was rejected
+      final podcast = await Feed.loadFeed(
+        url: feedUrl.trim(),
+        timeout: const Duration(seconds: 30),
+      );
+      _podcastCache[feedUrl] = podcast;
+      _cachedTime[feedUrl] = DateTime.now();
+      return podcast;
+    }
   }
 
   static void setCache(Map<String, Podcast> podcasts) {

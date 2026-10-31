@@ -38,7 +38,7 @@ class RadioBrowser {
 
   Future<void> _init() async {
     try {
-      _api = await RadioBrowserApi.discoverHost(userAgent: 'SoundCenter/2.0.0');
+      _api = await RadioBrowserApi.discoverHost(userAgent: 'SoundCenter/1.2.0');
       if (_api != null) return;
     } catch (_) {
       _api = null;

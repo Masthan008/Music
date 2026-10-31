@@ -144,8 +144,11 @@ class Source {
   }
 
   factory Source.fromStation(Station station) {
+    final String streamUrl = (station.urlResolved != null && station.urlResolved!.isNotEmpty)
+        ? station.urlResolved!
+        : station.url;
     return Source(
-      listenUrl: station.urlResolved!,
+      listenUrl: streamUrl,
       title: station.name,
       cover: station.favicon,
       uuid: station.stationUUID,

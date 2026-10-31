@@ -175,21 +175,73 @@ class JustAudioService {
           break;
 
         case AudioSource.stream:
-          final proxyUrl = await cancellable(_streamProxy.startProxy(path));
-          if (isStale()) return false;
-          final audioSource = ProgressiveAudioSource(
-            Uri.parse(proxyUrl),
-            headers: {'Icy-MetaData': '1', 'Connection': 'close'},
-          );
-          await cancellable(
-            _player.setAudioSource(audioSource),
-          ).timeout(const Duration(seconds: 30));
+          if (path.contains('.m3u8')) {
+            await cancellable(
+              _player.setAudioSource(
+                HlsAudioSource(
+                  Uri.parse(path),
+                  headers: {
+                    'User-Agent':
+                        'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36',
+                  },
+                ),
+              ),
+            ).timeout(const Duration(seconds: 30));
+          } else {
+            try {
+              final proxyUrl = await cancellable(_streamProxy.startProxy(path));
+              if (isStale()) return false;
+              final audioSource = ProgressiveAudioSource(
+                Uri.parse(proxyUrl),
+                headers: {'Icy-MetaData': '1', 'Connection': 'close'},
+              );
+              await cancellable(
+                _player.setAudioSource(audioSource),
+              ).timeout(const Duration(seconds: 25));
+            } catch (proxyErr) {
+              debugPrint('StreamProxy failed, falling back to direct stream: $proxyErr');
+              if (isStale()) return false;
+              await cancellable(
+                _player.setAudioSource(
+                  ProgressiveAudioSource(
+                    Uri.parse(path),
+                    headers: {
+                      'User-Agent':
+                          'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36',
+                    },
+                  ),
+                ),
+              ).timeout(const Duration(seconds: 25));
+            }
+          }
           break;
 
         case AudioSource.cloud:
-          await cancellable(
-            _player.setUrl(path),
-          ).timeout(const Duration(seconds: 30));
+          if (path.contains('.m3u8') || path.contains('hls')) {
+            await cancellable(
+              _player.setAudioSource(
+                HlsAudioSource(
+                  Uri.parse(path),
+                  headers: {
+                    'User-Agent':
+                        'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36',
+                  },
+                ),
+              ),
+            ).timeout(const Duration(seconds: 30));
+          } else {
+            await cancellable(
+              _player.setAudioSource(
+                ProgressiveAudioSource(
+                  Uri.parse(path),
+                  headers: {
+                    'User-Agent':
+                        'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36',
+                  },
+                ),
+              ),
+            ).timeout(const Duration(seconds: 30));
+          }
           break;
       }
 
@@ -472,8 +524,7 @@ class StreamProxy {
       try {
         final uri = Uri.parse(targetUrl);
         _activeRequest = await _client!.getUrl(uri);
-
-        // ارسال هدرهای درخواستی آی‌سی به سرور رادیو آنلاین جهت گرفتن متادیتا
+        _activeRequest!.headers.set('User-Agent', 'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36');
         _activeRequest!.headers.set('Icy-MetaData', '1');
         _activeRequest!.headers.set('Connection', 'close');
 

@@ -1,72 +1,65 @@
-// ignore_for_file: use_build_context_synchronously
-
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:material_ui/material_ui.dart';
-// ignore: depend_on_referenced_packages
-import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import 'package:sound_center/core/constants/constants.dart';
-import 'package:sound_center/features/settings/presentation/pages/update_dialog.dart';
-import 'package:sound_center/generated/l10n.dart';
-import 'package:sound_center/shared/theme/themes.dart';
-import 'package:sound_center/shared/widgets/toast_message.dart';
 
 class AboutDialogBody extends StatelessWidget {
   const AboutDialogBody({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        TextButton(
-          onPressed: () => _checkForUpdate(context),
-          child: Text(S.of(context).checkForUpdates),
-        ),
-      ],
-    );
-  }
-
-  Future<void> _checkForUpdate(BuildContext context) async {
-    try {
-      final res = await http.get(
-        Uri.parse('https://api.github.com/repos/Masthan008/Music/releases'),
-      );
-
-      if (res.statusCode != 200) return;
-
-      final List releases = jsonDecode(res.body);
-
-      final stableReleases = releases.where(
-        (r) => r['prerelease'] == false && r['draft'] == false,
-      );
-
-      if (stableReleases.isEmpty) return;
-      final latestStable = stableReleases.first;
-
-      final isPrerelease = latestStable['prerelease'] ?? false;
-      final isDraft = latestStable['draft'] ?? false;
-      final textStyle = ThemeManager.getThemeData(
-        ThemeManager.current,
-      ).textTheme.bodyMedium;
-      if (VERSION_NAME != latestStable['tag_name'] &&
-          !isPrerelease &&
-          !isDraft) {
-        showDialog(context: context, builder: (_) => UpdateDialog());
-      } else {
-        ToastMessage.showInfoMessage(
-          title: Text(
-            Intl.message(
-              "youAreUsingLatestVersion",
-              name: "youAreUsingLatestVersion",
-            ),
-            style: textStyle,
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 12.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  VERSION_NAME,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                    color: theme.colorScheme.onPrimaryContainer,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Indus Release Edition',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
           ),
-          autoCloseIn: 2,
-        );
-      }
-    } catch (_) {}
+          const SizedBox(height: 12),
+          Text(
+            'Sound Center is a high-performance audio player designed with modern Liquid Glass UI, featuring offline music playback, live radio streaming, podcast hub, and cloud tracks in 13 Indian languages.',
+            style: TextStyle(
+              fontSize: 13,
+              height: 1.4,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Features: Liquid Glass Design • Synced Lyrics • Sleep Timer • Podcasts • 24/7 Live Radio • SoundCloud Streamer',
+            style: TextStyle(
+              fontSize: 11,
+              fontStyle: FontStyle.italic,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
