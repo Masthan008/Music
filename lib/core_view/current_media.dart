@@ -124,6 +124,20 @@ class _CurrentMediaState extends State<CurrentMedia> {
     return _buildPlayerContainer(playerContent);
   }
 
+  Future<void> _dismissPlayer() async {
+    await _localPlayer.stop();
+    await _podcastPlayer.stop();
+    await _streamPlayer.stop();
+    await _cloudPlayer.stop();
+    _localPlayer.playerService.setSourceByForce(null);
+    _podcastPlayer.playerService.setSourceByForce(null);
+    _streamPlayer.playerService.setSourceByForce(null);
+    _cloudPlayer.playerService.setSourceByForce(null);
+    if (mounted) {
+      setState(() => _currentPlayer = null);
+    }
+  }
+
   Widget? _selectPlayerContent(
     AudioEntity? audio,
     Episode? episode,
@@ -136,6 +150,7 @@ class _CurrentMediaState extends State<CurrentMedia> {
       return CurrentAudio(
         key: ValueKey((widget.key, audio.id)),
         audioEntity: audio,
+        onClose: _dismissPlayer,
       );
     }
     if (_podcastPlayer.hasSource() && episode != null) {
@@ -144,6 +159,7 @@ class _CurrentMediaState extends State<CurrentMedia> {
       return CurrentPodcast(
         key: ValueKey((widget.key, episode.guid)),
         episode: episode,
+        onClose: _dismissPlayer,
       );
     }
     if (_streamPlayer.hasSource() && stream != null) {
@@ -161,27 +177,37 @@ class _CurrentMediaState extends State<CurrentMedia> {
       return CurrentStream(
         key: ValueKey((widget.key, "$url-$title")),
         streamEntity: stream,
+        onClose: _dismissPlayer,
       );
     }
     if (_cloudPlayer.hasSource() && cloud != null) {
       _playerPage = cloud_page.PlayTrack();
-      return CurrentTrack(key: ValueKey((widget.key, cloud.id)), track: cloud);
+      return CurrentTrack(
+        key: ValueKey((widget.key, cloud.id)),
+        track: cloud,
+        onClose: _dismissPlayer,
+      );
     }
     return null;
   }
 
   Widget _buildPlayerContainer(Widget child) {
-    return Container(
-      height: 70,
-      margin: const EdgeInsets.only(bottom: 20, left: 10, right: 10),
-      child: Glass(
-        borderRadius: 25.0,
-        color: widget.color ?? ThemeManager.current.mediaColor,
-        blur: widget.blur,
-        opacity: widget.opacity,
-        elevation: 8,
-        useBorder: true,
-        child: Center(child: child),
+    return Dismissible(
+      key: UniqueKey(),
+      direction: DismissDirection.down,
+      onDismissed: (_) => _dismissPlayer(),
+      child: Container(
+        height: 70,
+        margin: const EdgeInsets.only(bottom: 20, left: 10, right: 10),
+        child: Glass(
+          borderRadius: 25.0,
+          color: widget.color ?? ThemeManager.current.mediaColor,
+          blur: widget.blur,
+          opacity: widget.opacity,
+          elevation: 8,
+          useBorder: true,
+          child: Center(child: child),
+        ),
       ),
     );
   }

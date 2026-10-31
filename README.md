@@ -6,15 +6,18 @@
 
 ### The Next-Generation Music Player & Streaming Experience for Android
 
-[![Version](https://img.shields.io/badge/release-v1.2.0-blue.svg?style=for-the-badge)](https://github.com/Masthan008/Music/releases)
+[![Version](https://img.shields.io/badge/release-v1.3.0-blue.svg?style=for-the-badge)](https://github.com/Masthan008/Music/releases)
 [![Platform](https://img.shields.io/badge/platform-Android-green.svg?style=for-the-badge)](https://github.com/Masthan008/Music)
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B.svg?style=for-the-badge&logo=flutter)](https://flutter.dev)
-[![Indus Appstore](https://img.shields.io/badge/Indus%20Appstore-Ready-orange.svg?style=for-the-badge)](https://www.indusappstore.com)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-yellow.svg?style=for-the-badge)](https://www.gnu.org/licenses/gpl-3.0)
 
 <br/>
 
-**Sound Center** is a high-performance, elegant audio player and streaming hub designed specifically for Android and the **Indus Appstore**. Featuring a **Liquid Glass UI** with frosted crystal translucency, Sound Center brings together offline music playback, live radio streaming, podcast discovery, and cloud music streaming in 13+ Indian languages.
+**Sound Center** is a high-performance, elegant audio player and streaming hub. Featuring a **Liquid Glass UI** with frosted crystal translucency, Sound Center brings together offline music playback, live radio streaming, podcast discovery, and cloud music streaming across 13 Indian languages.
+
+<br/>
+
+[![Download APK](https://img.shields.io/badge/Download_APK-v1.3.0_Release-00C853?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Masthan008/Music/releases)
 
 </div>
 

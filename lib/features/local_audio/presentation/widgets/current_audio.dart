@@ -8,9 +8,14 @@ import 'package:sound_center/features/local_audio/domain/entities/audio.dart';
 import 'package:sound_center/shared/widgets/player/play_pause_button.dart';
 
 class CurrentAudio extends StatefulWidget {
-  const CurrentAudio({super.key, required this.audioEntity});
+  const CurrentAudio({
+    super.key,
+    required this.audioEntity,
+    this.onClose,
+  });
 
   final AudioEntity audioEntity;
+  final VoidCallback? onClose;
 
   @override
   State<CurrentAudio> createState() => _CurrentAudioState();
@@ -83,11 +88,24 @@ class _CurrentAudioState extends State<CurrentAudio> {
           fontSize: 13,
         ),
       ),
-      trailing: PlayPauseButton(
-        isPlaying: imp.isPlaying(),
-        onPressed: () async {
-          await imp.togglePlayState();
-        },
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          PlayPauseButton(
+            isPlaying: imp.isPlaying(),
+            onPressed: () async {
+              await imp.togglePlayState();
+            },
+          ),
+          if (widget.onClose != null)
+            IconButton(
+              icon: const Icon(Icons.close_rounded, size: 20),
+              tooltip: 'Close player',
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+              onPressed: widget.onClose,
+            ),
+        ],
       ),
     );
   }

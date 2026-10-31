@@ -5,7 +5,7 @@ class FeaturedStations {
         StreamSubEntity(
           title: 'AIR Vividh Bharati',
           url:
-              'https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio001/hlspbaudio001_Auto.m3u8',
+              'https://air.pc.cdn.bitgravity.com/air/live/pbaudio001/playlist.m3u8',
           startAt: DateTime(2025, 1, 1),
           isOnline: true,
           uuid: 'air-vividh-bharati',
@@ -18,11 +18,12 @@ class FeaturedStations {
           uuid: 'bolly-923fm',
         ),
         StreamSubEntity(
-          title: '4Lobos Bollywood Radio',
-          url: 'https://puma.streemlion.com:4130/stream',
+          title: 'Vividh Bharati 102.8 FM Hyderabad',
+          url:
+              'https://air.pc.cdn.bitgravity.com/air/live/pbaudio034/playlist.m3u8',
           startAt: DateTime(2025, 1, 1),
           isOnline: true,
-          uuid: '4lobos-bollywood',
+          uuid: 'air-vividh-bharati-hyd',
         ),
         StreamSubEntity(
           title: 'Fnf.Fm Hindi Hits',

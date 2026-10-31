@@ -116,7 +116,7 @@ class FeaturedPodcasts {
           subscribedAt: DateTime(2025, 1, 1),
           lastListenAt: DateTime(2025, 1, 1),
           updateTime: DateTime(2025, 1, 1),
-          totalEpisodes: 210,
+          totalEpisodes: 450,
           haveNewEpisode: false,
           author: 'Scicomm Media',
           artworkUrl:
@@ -124,11 +124,11 @@ class FeaturedPodcasts {
         ),
         SubscriptionEntity(
           title: 'Naval',
-          feedUrl: 'https://feeds.simplecast.com/lZq14r4v',
+          feedUrl: 'https://feeds.libsyn.com/166112/rss',
           subscribedAt: DateTime(2025, 1, 1),
           lastListenAt: DateTime(2025, 1, 1),
           updateTime: DateTime(2025, 1, 1),
-          totalEpisodes: 60,
+          totalEpisodes: 160,
           haveNewEpisode: false,
           author: 'Naval Ravikant',
           artworkUrl:
@@ -136,23 +136,23 @@ class FeaturedPodcasts {
         ),
         SubscriptionEntity(
           title: 'The Seen and the Unseen',
-          feedUrl: 'https://seenunseen.in/feed/podcast',
+          feedUrl: 'https://rss.libsyn.com/shows/91647/destinations/458496.xml',
           subscribedAt: DateTime(2025, 1, 1),
           lastListenAt: DateTime(2025, 1, 1),
           updateTime: DateTime(2025, 1, 1),
-          totalEpisodes: 380,
+          totalEpisodes: 450,
           haveNewEpisode: false,
           author: 'Amit Varma',
           artworkUrl:
-              'https://is1-ssl.mzstatic.com/image/thumb/Podcasts126/v4/4a/01/be/4a01be5e-ae0c-5544-7688-6627581b0a70/mza_4478335805565502931.jpg/600x600bb.jpg',
+              'https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/5c/51/83/5c5183c1-a532-3cb7-970e-0f71cfc0f29e/mza_17144181359091214301.png/600x600bb.jpg',
         ),
         SubscriptionEntity(
           title: 'Bhagavad Gita for Everyday Living',
-          feedUrl: 'https://anchor.fm/s/b841e28/podcast/rss',
+          feedUrl: 'https://feed.podbean.com/neilbhatt/feed.xml',
           subscribedAt: DateTime(2025, 1, 1),
           lastListenAt: DateTime(2025, 1, 1),
           updateTime: DateTime(2025, 1, 1),
-          totalEpisodes: 240,
+          totalEpisodes: 250,
           haveNewEpisode: false,
           author: 'Neil Bhatt',
           artworkUrl:
@@ -160,11 +160,12 @@ class FeaturedPodcasts {
         ),
         SubscriptionEntity(
           title: 'Stuff You Should Know',
-          feedUrl: 'https://feeds.megaphone.fm/stuffyoushouldknow',
+          feedUrl:
+              'https://www.omnycontent.com/d/playlist/e73c998e-6e60-432f-8610-ae210140c5b1/a91018a4-ea4f-4130-bf55-ae270180c327/44710ecc-10bb-48d1-93c7-ae270180c33e/podcast.rss',
           subscribedAt: DateTime(2025, 1, 1),
           lastListenAt: DateTime(2025, 1, 1),
           updateTime: DateTime(2025, 1, 1),
-          totalEpisodes: 1900,
+          totalEpisodes: 2900,
           haveNewEpisode: false,
           author: 'iHeartPodcasts',
           artworkUrl:
@@ -172,11 +173,12 @@ class FeaturedPodcasts {
         ),
         SubscriptionEntity(
           title: 'Cyrus Says',
-          feedUrl: 'https://feed.podbean.com/cyrussays/feed.xml',
+          feedUrl:
+              'https://www.omnycontent.com/d/playlist/e0dce4b3-2eb8-48cb-822c-af1d00e03e20/9baef9c9-4ff2-4b4e-a3dd-af540094e334/270ddb3d-16c8-4190-81d4-af540094e347/podcast.rss',
           subscribedAt: DateTime(2025, 1, 1),
           lastListenAt: DateTime(2025, 1, 1),
           updateTime: DateTime(2025, 1, 1),
-          totalEpisodes: 1200,
+          totalEpisodes: 1700,
           haveNewEpisode: false,
           author: 'IVM Podcasts',
           artworkUrl:

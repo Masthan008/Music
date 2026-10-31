@@ -32,7 +32,7 @@ class AboutDialogBody extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'Indus Release Edition',
+                'Universal Edition',
                 style: TextStyle(
                   fontSize: 12,
                   color: theme.colorScheme.onSurfaceVariant,

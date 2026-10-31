@@ -44,7 +44,7 @@ class _PodcastDetailState extends State<PodcastDetail> {
   String? image;
   final ScrollController _sliverScrollController = ScrollController();
 
-  void _init({bool retry = true}) async {
+  void _init() async {
     try {
       subscribed = await repository.isSubscribed(widget.feedUrl);
       podcast = await repository.loadPodcastInfo(widget.feedUrl);
@@ -59,15 +59,11 @@ class _PodcastDetailState extends State<PodcastDetail> {
       podcast = null;
     } finally {
       if (podcast == null && mounted) {
-        if (retry) {
-          ToastMessage.showErrorMessage(
-            context: context,
-            title: S.of(context).loadFail,
-          );
-          _init(retry: false);
-        } else {
-          if (mounted) Navigator.pop(context);
-        }
+        ToastMessage.showErrorMessage(
+          context: context,
+          title: S.of(context).loadFail,
+        );
+        if (mounted) Navigator.pop(context);
       }
     }
     if (mounted) setState(() {});
@@ -106,7 +102,9 @@ class _PodcastDetailState extends State<PodcastDetail> {
       body: Stack(
         children: [
           CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
             controller: _sliverScrollController,
             slivers: [
               SliverAppBar(

@@ -7,9 +7,14 @@ import 'package:sound_center/shared/widgets/network_image.dart';
 import 'package:sound_center/shared/widgets/player/play_pause_button.dart';
 
 class CurrentPodcast extends StatefulWidget {
-  const CurrentPodcast({super.key, required this.episode});
+  const CurrentPodcast({
+    super.key,
+    required this.episode,
+    this.onClose,
+  });
 
   final Episode episode;
+  final VoidCallback? onClose;
 
   @override
   State<CurrentPodcast> createState() => _CurrentPodcastState();
@@ -74,12 +79,25 @@ class _CurrentPodcastState extends State<CurrentPodcast> {
           fontSize: 13,
         ),
       ),
-      trailing: PlayPauseButton(
-        isLoading: isLoading,
-        isPlaying: isPlaying,
-        onPressed: () async {
-          imp.togglePlayState();
-        },
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          PlayPauseButton(
+            isLoading: isLoading,
+            isPlaying: isPlaying,
+            onPressed: () async {
+              imp.togglePlayState();
+            },
+          ),
+          if (widget.onClose != null)
+            IconButton(
+              icon: const Icon(Icons.close_rounded, size: 20),
+              tooltip: 'Close player',
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+              onPressed: widget.onClose,
+            ),
+        ],
       ),
     );
   }

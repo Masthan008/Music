@@ -7,9 +7,14 @@ import 'package:sound_center/shared/widgets/network_image.dart';
 import 'package:sound_center/shared/widgets/player/play_pause_button.dart';
 
 class CurrentTrack extends StatefulWidget {
-  const CurrentTrack({super.key, required this.track});
+  const CurrentTrack({
+    super.key,
+    required this.track,
+    this.onClose,
+  });
 
   final CloudTrack track;
+  final VoidCallback? onClose;
 
   @override
   State<CurrentTrack> createState() => _CurrentTrackState();
@@ -74,13 +79,26 @@ class _CurrentTrackState extends State<CurrentTrack> {
           fontSize: 13,
         ),
       ),
-      trailing: PlayPauseButton(
-        key: ValueKey(widget.track.title),
-        isLoading: isLoading,
-        isPlaying: isPlaying,
-        onPressed: () async {
-          imp.togglePlayState();
-        },
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          PlayPauseButton(
+            key: ValueKey(widget.track.title),
+            isLoading: isLoading,
+            isPlaying: isPlaying,
+            onPressed: () async {
+              imp.togglePlayState();
+            },
+          ),
+          if (widget.onClose != null)
+            IconButton(
+              icon: const Icon(Icons.close_rounded, size: 20),
+              tooltip: 'Close player',
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+              onPressed: widget.onClose,
+            ),
+        ],
       ),
     );
   }

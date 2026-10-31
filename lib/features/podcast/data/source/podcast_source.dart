@@ -1,6 +1,33 @@
+import 'dart:isolate';
 import 'package:podcast_search/podcast_search.dart';
 import 'package:sound_center/database/shared_preferences/app_setting_storage.dart';
 import 'package:sound_center/features/settings/domain/settings_repository.dart';
+
+class _FeedLoadParams {
+  final String url;
+  final String userAgent;
+
+  const _FeedLoadParams({
+    required this.url,
+    required this.userAgent,
+  });
+}
+
+Future<Podcast> _loadFeedInIsolate(_FeedLoadParams params) async {
+  const timeout = Duration(seconds: 15);
+  try {
+    return await Feed.loadFeed(
+      url: params.url,
+      userAgent: params.userAgent,
+      timeout: timeout,
+    );
+  } catch (_) {
+    return await Feed.loadFeed(
+      url: params.url,
+      timeout: timeout,
+    );
+  }
+}
 
 class PodcastSource {
   static final Map<String, Podcast> _podcastCache = {};
@@ -32,33 +59,23 @@ class PodcastSource {
     String feedUrl, {
     Duration ttl = const Duration(hours: 1),
   }) async {
-    final cached = _podcastCache[feedUrl];
+    final cleanUrl = feedUrl.trim();
+    final cached = _podcastCache[cleanUrl];
     if (cached != null) {
-      final cachedTime = _cachedTime[feedUrl]!;
+      final cachedTime = _cachedTime[cleanUrl]!;
       if (DateTime.now().difference(cachedTime) < ttl) {
         return cached;
       }
     }
 
-    try {
-      final podcast = await Feed.loadFeed(
-        url: feedUrl.trim(),
-        userAgent: _userAgent,
-        timeout: const Duration(seconds: 30),
-      );
-      _podcastCache[feedUrl] = podcast;
-      _cachedTime[feedUrl] = DateTime.now();
-      return podcast;
-    } catch (e) {
-      // Retry once with blank user agent if custom was rejected
-      final podcast = await Feed.loadFeed(
-        url: feedUrl.trim(),
-        timeout: const Duration(seconds: 30),
-      );
-      _podcastCache[feedUrl] = podcast;
-      _cachedTime[feedUrl] = DateTime.now();
-      return podcast;
-    }
+    // Run feed download & XML parsing completely off the UI isolate
+    final podcast = await Isolate.run(() => _loadFeedInIsolate(
+          _FeedLoadParams(url: cleanUrl, userAgent: _userAgent),
+        ));
+
+    _podcastCache[cleanUrl] = podcast;
+    _cachedTime[cleanUrl] = DateTime.now();
+    return podcast;
   }
 
   static void setCache(Map<String, Podcast> podcasts) {
