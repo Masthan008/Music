@@ -13,7 +13,7 @@ const double LIST_ITEM_HEIGHT = 70;
 
 const double EXPANDED_HEIGHT = 300;
 
-const int VERSION_NUMBER = 9;
+const int VERSION_NUMBER = 10;
 
 const String VERSION_NAME = "v1.3.0";
 
